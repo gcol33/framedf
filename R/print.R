@@ -6,10 +6,10 @@
 
 #' Print a `frame_df` Object
 #'
-#' Prints a calm, qualitative narrative of the data frame. The output is
+#' Prints a qualitative narrative of the data frame. The output is
 #' organised into four sections: Structure, Relationships, Anomalies, and
 #' Ignored. No raw correlation values, p-values, or test statistics are
-#' shown -- those live in [relationships()] and [details()] for readers
+#' shown; those live in [relationships()] and [details()] for readers
 #' who want them.
 #'
 #' @param x A `frame_df` object.
@@ -26,9 +26,27 @@ print.frame_df <- function(x, ...) {
   .print_structure_section(x)
   .print_relationships_section(x)
   .print_anomalies_section(x)
+  .print_missingness_section(x)
+  .print_inflation_section(x)
   .print_ignored_section(x)
 
   invisible(x)
+}
+
+.print_missingness_section <- function(x) {
+  findings <- x$missingness_findings %||% list()
+  if (length(findings) == 0L) return(invisible(NULL))
+  .section("Missingness")
+  for (f in findings) cat(f$label, "\n", sep = "")
+  cat("\n")
+}
+
+.print_inflation_section <- function(x) {
+  findings <- x$inflation_findings %||% list()
+  if (length(findings) == 0L) return(invisible(NULL))
+  .section("Inflation and sparsity")
+  for (f in findings) cat(f$label, "\n", sep = "")
+  cat("\n")
 }
 
 # ---------------------------------------------------------------------------
@@ -39,6 +57,10 @@ print.frame_df <- function(x, ...) {
   s <- x$structure
   .section("Structure")
   cat(.shape_phrase(s$shape), "\n\n", sep = "")
+
+  if (!is.null(s$observation_unit)) {
+    .bullet_block("Detected observation unit:", s$observation_unit)
+  }
 
   .bullet_block("Detected temporal structure:", s$temporal)
   .bullet_block("Detected spatial structure:",  s$spatial)
@@ -53,6 +75,17 @@ print.frame_df <- function(x, ...) {
     group_lines <- c(group_lines, sprintf("observations grouped by %s", gc))
   }
   .bullet_block("Possible grouping structure:", group_lines)
+
+  if (length(s$nested) > 0L) {
+    nested_lines <- vapply(s$nested, function(p) {
+      sprintf("%s nested within %s", p$child, p$parent)
+    }, character(1L))
+    .bullet_block("Possible nested structure:", nested_lines)
+  }
+
+  if (length(s$compositional_cols) > 0L) {
+    .bullet_block("Possible compositional structure:", s$compositional_cols)
+  }
 
   cat("\n")
 }
@@ -74,20 +107,30 @@ print.frame_df <- function(x, ...) {
 
   for (kind in c("meaningful", "suspicious", "structural")) {
     block <- Filter(function(f) (f$kind %||% "") == kind, shown)
-    for (f in block) cat(.narrative_line(f), "\n", sep = "")
+    for (f in block) cat(.narrative_line(f), "\n\n", sep = "")
   }
-  cat("\n", sep = "")
 }
 
 # Render a single finding as a one- or two-line natural-language sentence.
+# Prefers the precomputed `label` from the labeler; falls back to a
+# type-specific narrative for safety.
 .narrative_line <- function(f) {
-  switch(f$type,
-    numeric_numeric = .narrative_numeric(f),
-    categorical_numeric = .narrative_cat(f),
-    drift = .narrative_drift(f),
-    compositional = .narrative_comp(f),
-    sprintf("%s ~ %s", f$y, f$x)
-  )
+  base <- if (!is.null(f$label) && !is.na(f$label)) {
+    f$label
+  } else {
+    switch(f$type %||% "",
+      numeric_numeric     = .narrative_numeric(f),
+      categorical_numeric = .narrative_cat(f),
+      drift               = .narrative_drift(f),
+      compositional       = .narrative_comp(f),
+      sprintf("%s ~ %s", f$y, f$x)
+    )
+  }
+  concern <- f$concern %||% NA_character_
+  if (!is.na(concern) && (f$kind %||% "") == "suspicious") {
+    base <- paste0(base, "\n  ", concern)
+  }
+  base
 }
 
 .narrative_numeric <- function(f) {
@@ -107,11 +150,7 @@ print.frame_df <- function(x, ...) {
                  moderate = "appears to influence",
                  weak     = "weakly influences",
                  "is largely independent of")
-  base <- sprintf("%s identity %s %s estimates", f$x, qual, f$y)
-  if ((f$kind %||% "") == "suspicious") {
-    base <- paste0(base, "\n  possible observer effect")
-  }
-  base
+  sprintf("%s identity %s %s estimates", f$x, qual, f$y)
 }
 
 .narrative_drift <- function(f) {
@@ -120,11 +159,7 @@ print.frame_df <- function(x, ...) {
                  moderate = "drifts with",
                  weak     = "shows weak drift with",
                  "")
-  base <- sprintf("%s %s sampling %s", f$y, qual, f$x)
-  if ((f$kind %||% "") == "suspicious") {
-    base <- paste0(base, "\n  possible spatial sampling drift")
-  }
-  base
+  sprintf("%s %s %s", f$y, qual, f$x)
 }
 
 .narrative_comp <- function(f) {
@@ -143,8 +178,8 @@ print.frame_df <- function(x, ...) {
     return(invisible(NULL))
   }
 
-  # Group by tag so the section stays calm: each tag prints one line per
-  # column it touches, instead of repeating "outliers" five times in a row.
+  # Group by tag so each tag prints one line per column it touches,
+  # instead of repeating "outliers" five times in a row.
   grouped <- split(findings, vapply(findings, function(f) f$tag, character(1L)))
 
   for (tag in names(grouped)) {
@@ -171,11 +206,18 @@ print.frame_df <- function(x, ...) {
     very_few_rows_levels =
       sprintf("%s have categorical levels represented by very few rows", noun),
     outliers =
-      sprintf("%s contain%s a noticeable number of outliers", noun,
-              if (one) "s" else ""),
+      sprintf("%s contain%s extreme values relative to most observations",
+              noun, if (one) "s" else ""),
     skewed_distribution =
       sprintf("%s show%s a strongly skewed distribution", noun,
               if (one) "s" else ""),
+    isolated_temporal =
+      sprintf("%s has isolated values far outside the main sampling period",
+              noun),
+    possible_coord_swap = {
+      cols <- items[[1L]]$cols
+      sprintf("some %s and %s values may be swapped", cols[[1L]], cols[[2L]])
+    },
     sprintf("%s flagged: %s", noun, tag)
   )
 }

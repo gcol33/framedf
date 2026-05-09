@@ -11,11 +11,11 @@ figures:
   fig.ext: svg
   bg: '#F5F6F8'
 home:
-  title: 'framedf: Calm Triage of Unfamiliar Data Frames'
+  title: 'framedf: First-Pass Triage of Unfamiliar Data Frames'
   description: |
     A first-pass diagnostic for data frames. Infers a semantic role for
     every column, screens all sensible pairs for relationships, and lists
-    anomalies — qualitatively, not as raw test statistics.
+    anomalies as qualitative sentences.
 authors:
   Gilles Colling:
     href: https://github.com/gcol33

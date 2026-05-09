@@ -13,14 +13,14 @@ Initial public release.
 
 ## Reader functions
 
-* `print.frame_df()` — narrative overview with **Structure**,
+* `print.frame_df()`: narrative overview with **Structure**,
   **Relationships**, **Anomalies**, and **Ignored** sections. Output is
   qualitative; no raw test statistics in the default view.
-* `relationships()` — relationships grouped into **meaningful**,
+* `relationships()`: relationships grouped into **meaningful**,
   **suspicious**, **structural**, and **ignored** with direction,
   strength, stability, and method per pair.
-* `anomalies()` — per-column oddities grouped by pattern.
-* `details()` — analysis mode, column roles, skipped rules, backend.
+* `anomalies()`: per-column oddities grouped by pattern.
+* `details()`: analysis mode, column roles, skipped rules, backend.
 
 ## Screening
 

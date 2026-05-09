@@ -10,11 +10,11 @@
 Source:
 [`inst/CITATION`](https://github.com/gcol33/framedf/blob/HEAD/inst/CITATION)
 
-Colling G (2026). *framedf: Calm Triage of Unfamiliar Data Frames*. R
-package version 0.1.0, <https://github.com/gcol33/framedf>.
+Colling G (2026). *framedf: First-Pass Triage of Unfamiliar Data
+Frames*. R package version 0.1.0, <https://github.com/gcol33/framedf>.
 
     @Manual{,
-      title = {framedf: Calm Triage of Unfamiliar Data Frames},
+      title = {framedf: First-Pass Triage of Unfamiliar Data Frames},
       author = {Gilles Colling},
       year = {2026},
       note = {R package version 0.1.0},

@@ -7,14 +7,13 @@ and the screening behaviour it triggers.
 ## Why Roles Matter
 
 A correlation matrix treats `row_id` and `temperature` identically. They
-are both numeric, after all. But conceptually they are not the same
-column — `row_id` is bookkeeping, and a strong correlation between
-`row_id` and `temperature` is almost always a sign that the data is
-sorted by time, not a real association.
+are both numeric, after all. But conceptually they are different:
+`row_id` is bookkeeping, and a strong correlation between `row_id` and
+`temperature` usually reflects sort order rather than association.
 
 Role inference is what lets `framedf` say *“latitude was ignored because
-it is a spatial coordinate, screened separately as drift”* instead of
-just dumping a Pearson coefficient.
+it is a spatial coordinate, screened separately as drift”* in plain
+language.
 
 ## The Roles
 

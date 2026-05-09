@@ -72,7 +72,7 @@ latitude / longitude columns. We want to know whether the geographic
 sampling has shifted over time.
 
 **Challenge.** Time and space appear in many tables but are rarely
-checked together — yet a slow drift is a common source of confounded
+checked together, yet a slow drift is a common source of confounded
 trend estimates.
 
 **Strategy.** `framedf` runs a dedicated drift screen for every temporal
@@ -101,27 +101,27 @@ relationships(fd_drift, kind = "suspicious")
 #>   strength: strong
 #>   stability: high
 #>   method: drift screen
-#>   concern: sampling design may be spatially structured
+#>   concern: possible spatial sampling drift
 ```
 
 The drift between `year` and `longitude` is surfaced as suspicious.
-Plain numeric pair screening would have hidden this — `year` and
+Plain numeric pair screening would have hidden this, since `year` and
 `longitude` are both excluded from the symmetric numeric sweep because
 they are role-tagged as temporal and spatial respectively.
 
 ## Workflow 3: A Constrained Complement
 
 **Goal.** Two cover variables (native cover and alien cover) are
-recorded as fractions on the same plot. We want to make sure the package
-treats them as a constrained pair, not as independent measurements.
+recorded as fractions on the same plot. We want the package to treat
+them as a constrained pair, since they always sum to one.
 
 **Challenge.** A naive correlation between the two is mechanically
 strong and would hijack the *meaningful* section.
 
 **Strategy.** Compositional pairs whose pairwise sum is approximately
 constant are routed to a separate **structural** block. They are still
-visible — the user can decide what to do — but they are not mixed in
-with the genuine ecological signals.
+visible (the user can decide what to do) but they are not mixed in with
+the genuine ecological signals.
 
 ``` r
 
@@ -153,14 +153,14 @@ relationships(fd_comp)
 #>   method: compositional sum check
 ```
 
-The `native_cover ~ alien_cover` pair shows up under **structural** —
-described as a constrained complement — while the genuine
+The `native_cover ~ alien_cover` pair shows up under **structural**,
+described as a constrained complement, while the genuine
 `richness ~ temperature` association lives under **meaningful**.
 
 ## Workflow 4: Large Data with Subsampling
 
 **Goal.** A million-row table is too big to screen fully on every pair.
-We want sensible relationships in seconds, not minutes.
+We want sensible relationships in seconds.
 
 **Challenge.** Naive pair screening on millions of rows multiplies
 through too many regressions.

@@ -19,21 +19,11 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Workflows">
 </head>
-<body>
-<p>
-
-
-
-
-
-
-
-
-  pkgdown/mathjax-config.html
+<body>pkgdown/mathjax-config.html
 
   
 
-  </p>
+  
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -162,7 +152,7 @@ it.</p>
 column and latitude / longitude columns. We want to know whether the
 geographic sampling has shifted over time.</p>
 <p><strong>Challenge.</strong> Time and space appear in many tables but
-are rarely checked together — yet a slow drift is a common source of
+are rarely checked together, yet a slow drift is a common source of
 confounded trend estimates.</p>
 <p><strong>Strategy.</strong> <code>framedf</code> runs a dedicated
 drift screen for every temporal × spatial pair. If the slope is moderate
@@ -188,28 +178,27 @@ or strong, the pair is reported as suspicious with the concern
 <span><span class="co">#&gt;   strength: strong</span></span>
 <span><span class="co">#&gt;   stability: high</span></span>
 <span><span class="co">#&gt;   method: drift screen</span></span>
-<span><span class="co">#&gt;   concern: sampling design may be spatially structured</span></span></code></pre></div>
+<span><span class="co">#&gt;   concern: possible spatial sampling drift</span></span></code></pre></div>
 <p>The drift between <code>year</code> and <code>longitude</code> is
 surfaced as suspicious. Plain numeric pair screening would have hidden
-this — <code>year</code> and <code>longitude</code> are both excluded
-from the symmetric numeric sweep because they are role-tagged as
-temporal and spatial respectively.</p>
+this, since <code>year</code> and <code>longitude</code> are both
+excluded from the symmetric numeric sweep because they are role-tagged
+as temporal and spatial respectively.</p>
 </div>
 <div class="section level2">
 <h2 id="workflow-3-a-constrained-complement">Workflow 3: A Constrained Complement<a class="anchor" aria-label="anchor" href="#workflow-3-a-constrained-complement"></a>
 </h2>
 <p><strong>Goal.</strong> Two cover variables (native cover and alien
-cover) are recorded as fractions on the same plot. We want to make sure
-the package treats them as a constrained pair, not as independent
-measurements.</p>
+cover) are recorded as fractions on the same plot. We want the package
+to treat them as a constrained pair, since they always sum to one.</p>
 <p><strong>Challenge.</strong> A naive correlation between the two is
 mechanically strong and would hijack the <em>meaningful</em>
 section.</p>
 <p><strong>Strategy.</strong> Compositional pairs whose pairwise sum is
 approximately constant are routed to a separate
-<strong>structural</strong> block. They are still visible — the user can
-decide what to do — but they are not mixed in with the genuine
-ecological signals.</p>
+<strong>structural</strong> block. They are still visible (the user can
+decide what to do) but they are not mixed in with the genuine ecological
+signals.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">200L</span></span>
@@ -238,7 +227,7 @@ ecological signals.</p>
 <span><span class="co">#&gt;   concern: compositional relationship</span></span>
 <span><span class="co">#&gt;   method: compositional sum check</span></span></code></pre></div>
 <p>The <code>native_cover ~ alien_cover</code> pair shows up under
-<strong>structural</strong> — described as a constrained complement —
+<strong>structural</strong>, described as a constrained complement,
 while the genuine <code>richness ~ temperature</code> association lives
 under <strong>meaningful</strong>.</p>
 </div>
@@ -246,8 +235,7 @@ under <strong>meaningful</strong>.</p>
 <h2 id="workflow-4-large-data-with-subsampling">Workflow 4: Large Data with Subsampling<a class="anchor" aria-label="anchor" href="#workflow-4-large-data-with-subsampling"></a>
 </h2>
 <p><strong>Goal.</strong> A million-row table is too big to screen fully
-on every pair. We want sensible relationships in seconds, not
-minutes.</p>
+on every pair. We want sensible relationships in seconds.</p>
 <p><strong>Challenge.</strong> Naive pair screening on millions of rows
 multiplies through too many regressions.</p>
 <p><strong>Strategy.</strong> Above <code>subsample_threshold</code>

@@ -40,8 +40,8 @@ The list of findings, invisibly.
 ## Details
 
 Numeric evidence (correlation coefficients, F-statistics, p-values) is
-available on the returned object — the printed view is meant to be calm
-and skimmable.
+available on the returned object; the printed view is meant to be
+skimmable.
 
 ## Examples
 

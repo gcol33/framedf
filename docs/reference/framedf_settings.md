@@ -81,4 +81,4 @@ A named list of settings.
 
 - `adjustment`:
 
-  Optional column names to partial out before numeric–numeric screening.
+  Optional column names to partial out before numeric pair screening.

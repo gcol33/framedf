@@ -3,7 +3,7 @@
 First of all, thank you very much for taking the time to contribute to
 the **framedf** project!
 
-This document provides guidelines for contributing to framedf—its
+This document provides guidelines for contributing to framedf, its
 codebase and documentation.\
 These guidelines are meant to guide you, not to restrict you.\
 If in doubt, use your best judgment and feel free to propose

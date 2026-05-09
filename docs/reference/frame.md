@@ -3,9 +3,9 @@
 `frame()` reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
-set of anomalies in a single pass. The result is a calm, qualitative
-summary suitable for the first thirty seconds of working with an
-unfamiliar dataset, not a model fit.
+set of anomalies in a single pass. The result is a qualitative summary
+suitable for the first thirty seconds of working with an unfamiliar
+dataset.
 
 ## Usage
 
@@ -39,19 +39,19 @@ settings used.
 
 ## Details
 
-Three reader functions consume the result:
+Reader functions consume the result:
 
-- [`print.frame_df()`](https://gillescolling.com/framedf/reference/print.frame_df.md)
-  — narrative overview (the default `print(frame(df))`)
+- [`print.frame_df()`](https://gillescolling.com/framedf/reference/print.frame_df.md):
+  narrative overview (the default `print(frame(df))`)
 
-- [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md)
-  — meaningful, suspicious, structural, and ignored pairs
+- [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md):
+  meaningful, suspicious, structural, and ignored pairs
 
-- [`anomalies()`](https://gillescolling.com/framedf/reference/anomalies.md)
-  — per-column oddities (range, distribution, capitalization)
+- [`anomalies()`](https://gillescolling.com/framedf/reference/anomalies.md):
+  per-column oddities (range, distribution, capitalization)
 
-- [`details()`](https://gillescolling.com/framedf/reference/details.md)
-  — analysis mode, column roles, skipped rules, backend
+- [`details()`](https://gillescolling.com/framedf/reference/details.md):
+  analysis mode, column roles, skipped rules, backend
 
 ## Examples
 

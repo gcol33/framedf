@@ -5,8 +5,8 @@
 #' levels, distributional outliers, and skewed distributions.
 #'
 #' Numeric backing detail (Tukey fences, skewness coefficients, indices of
-#' offending rows) is available on the returned object — the print view is
-#' meant to be calm and skimmable.
+#' offending rows) is available on the returned object; the print view is
+#' meant to be skimmable.
 #'
 #' @param x A `frame_df` object.
 #' @param ... Additional arguments (unused).

@@ -44,7 +44,7 @@ before a strong group effect counts as an observer-style concern.}
 as rare.}
 \item{\code{seed}}{Seed used by the subsampling layer.}
 \item{\code{adjustment}}{Optional column names to partial out before
-numeric–numeric screening.}
+numeric pair screening.}
 }
 }
 

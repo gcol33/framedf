@@ -3,27 +3,27 @@
 ## What `framedf` Does
 
 `framedf` is a first-pass diagnostic for an unfamiliar data frame. It
-tries to read the data the way a careful colleague would — by figuring
-out what each column means, by noticing pairs of columns that move
-together, and by flagging values that look wrong.
+reads the data the way a careful colleague would: by figuring out what
+each column means, by noticing pairs of columns that move together, and
+by flagging values that look wrong.
 
 The result is qualitative. You get sentences like *“temperature
-decreases strongly with elevation”*, not Pearson coefficients. Numeric
-evidence is still on the object for anyone who wants it; the printed
-view stays calm.
+decreases strongly with elevation”*. Numeric evidence (Pearson
+coefficients, F-statistics, p-values) is still on the object for anyone
+who wants it; the printed view stays skimmable.
 
 There is one entry point,
 [`frame()`](https://gillescolling.com/framedf/reference/frame.md), and
 four reader functions:
 
-- `print(frame(df))` — narrative overview.
+- `print(frame(df))`: narrative overview.
 
-- `relationships(frame(df))` — pairs grouped as meaningful, suspicious,
+- `relationships(frame(df))`: pairs grouped as meaningful, suspicious,
   structural, or ignored.
 
-- `anomalies(frame(df))` — per-column oddities.
+- `anomalies(frame(df))`: per-column oddities.
 
-- `details(frame(df))` — methods, roles, skipped rules, backend.
+- `details(frame(df))`: methods, roles, skipped rules, backend.
 
 ## Installation
 
@@ -67,7 +67,7 @@ print(fd)
 #> 
 #> Structure
 #> ────────────────
-#> Looks like a repeated-measure observational dataframe.
+#> Looks like a spatial repeated-measure observational dataframe.
 #> 
 #> Detected temporal structure:
 #> • year
@@ -83,27 +83,27 @@ print(fd)
 #> • repeated observations within plot_id
 #> • observations grouped by country
 #> 
+#> Possible compositional structure:
+#> • cover_a
+#> • cover_b
+#> 
 #> 
 #> Relationships
 #> ────────────────
 #> temperature strongly decreases with elevation
+#> 
 #> cover_b strongly decreases with cover_a
+#> 
 #> observer identity appears to influence richness estimates
-#> plot_id identity appears to influence elevation estimates
-#>   possible observer effect
-#> plot_id identity appears to influence richness estimates
-#>   possible observer effect
-#> plot_id identity appears to influence cover_a estimates
-#>   possible observer effect
-#> plot_id identity appears to influence temperature estimates
-#>   possible observer effect
-#> plot_id identity appears to influence cover_b estimates
-#>   possible observer effect
+#> 
+#> plot_id appears to structure both elevation, richness, cover_a, temperature, and cover_b
+#>   possible dataset effect
+#> 
 #> cover_a and cover_b behave as constrained complements
 #> 
 #> Anomalies
 #> ────────────────
-#> richness contains a noticeable number of outliers
+#> richness contains extreme values relative to most observations
 #> 
 #> Ignored relationships
 #> ────────────────
@@ -116,15 +116,15 @@ print(fd)
 The four sections of the print output map onto the four parts of any
 first-look conversation:
 
-- **Structure** — what kind of dataframe is this? How is it shaped, what
+- **Structure**: what kind of dataframe is this? How is it shaped, what
   identifies a row, what is the temporal/spatial axis?
 
-- **Relationships** — what moves with what? Which patterns are real and
+- **Relationships**: what moves with what? Which patterns are real and
   which feel like artefacts?
 
-- **Anomalies** — what looks wrong?
+- **Anomalies**: what looks wrong?
 
-- **Ignored** — what was excluded from screening, and why?
+- **Ignored**: what was excluded from screening, and why?
 
 ## Drill Down
 
@@ -155,40 +155,7 @@ relationships(fd)
 #> 
 #> suspicious
 #> ────────────────
-#> elevation ~ plot_id
-#>   pattern: group effect
-#>   strength: moderate
-#>   stability: high
-#>   method: categorical numeric screen
-#>   concern: possible observer effect
-#> 
-#> richness ~ plot_id
-#>   pattern: group effect
-#>   strength: moderate
-#>   stability: high
-#>   method: categorical numeric screen
-#>   concern: possible observer effect
-#> 
-#> cover_a ~ plot_id
-#>   pattern: group effect
-#>   strength: moderate
-#>   stability: high
-#>   method: categorical numeric screen
-#>   concern: possible observer effect
-#> 
-#> temperature ~ plot_id
-#>   pattern: group effect
-#>   strength: moderate
-#>   stability: high
-#>   method: categorical numeric screen
-#>   concern: possible observer effect
-#> 
-#> cover_b ~ plot_id
-#>   pattern: group effect
-#>   strength: moderate
-#>   stability: high
-#>   method: categorical numeric screen
-#>   concern: possible observer effect
+#> elevation,richness,cover_a,temperature,cover_b ~ plot_id
 #> 
 #> structural
 #> ────────────────
@@ -315,8 +282,8 @@ frame(df,
 
 ## Next Steps
 
-- [Workflows](https://gillescolling.com/framedf/articles/workflows.md) —
+- [Workflows](https://gillescolling.com/framedf/articles/workflows.md):
   practical examples (large data, repeated measures, observer effects).
-- [Roles and rules](https://gillescolling.com/framedf/articles/roles.md)
-  — what each role means and why some columns are excluded from
-  screening.
+- [Roles and
+  rules](https://gillescolling.com/framedf/articles/roles.md): what each
+  role means and why some columns are excluded from screening.

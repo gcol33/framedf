@@ -30,8 +30,8 @@ The list of anomaly findings, invisibly.
 ## Details
 
 Numeric backing detail (Tukey fences, skewness coefficients, indices of
-offending rows) is available on the returned object — the print view is
-meant to be calm and skimmable.
+offending rows) is available on the returned object; the print view is
+meant to be skimmable.
 
 ## Examples
 

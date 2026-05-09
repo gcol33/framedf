@@ -25,17 +25,17 @@ findings, and the settings used.
 \code{frame()} reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
-set of anomalies in a single pass. The result is a calm, qualitative
-summary suitable for the first thirty seconds of working with an
-unfamiliar dataset, not a model fit.
+set of anomalies in a single pass. The result is a qualitative summary
+suitable for the first thirty seconds of working with an unfamiliar
+dataset.
 }
 \details{
-Three reader functions consume the result:
+Reader functions consume the result:
 \itemize{
-\item \code{\link[=print.frame_df]{print.frame_df()}} — narrative overview (the default \code{print(frame(df))})
-\item \code{\link[=relationships]{relationships()}} — meaningful, suspicious, structural, and ignored pairs
-\item \code{\link[=anomalies]{anomalies()}}      — per-column oddities (range, distribution, capitalization)
-\item \code{\link[=details]{details()}}        — analysis mode, column roles, skipped rules, backend
+\item \code{\link[=print.frame_df]{print.frame_df()}}: narrative overview (the default \code{print(frame(df))})
+\item \code{\link[=relationships]{relationships()}}: meaningful, suspicious, structural, and ignored pairs
+\item \code{\link[=anomalies]{anomalies()}}: per-column oddities (range, distribution, capitalization)
+\item \code{\link[=details]{details()}}: analysis mode, column roles, skipped rules, backend
 }
 }
 \examples{

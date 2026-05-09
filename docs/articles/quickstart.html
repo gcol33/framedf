@@ -19,21 +19,11 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Quick Start">
 </head>
-<body>
-<p>
-
-
-
-
-
-
-
-
-  pkgdown/mathjax-config.html
+<body>pkgdown/mathjax-config.html
 
   
 
-  </p>
+  
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -104,21 +94,21 @@ Colling</h4>
 <h2 id="what-framedf-does">What <code>framedf</code> Does<a class="anchor" aria-label="anchor" href="#what-framedf-does"></a>
 </h2>
 <p><code>framedf</code> is a first-pass diagnostic for an unfamiliar
-data frame. It tries to read the data the way a careful colleague would
-— by figuring out what each column means, by noticing pairs of columns
-that move together, and by flagging values that look wrong.</p>
+data frame. It reads the data the way a careful colleague would: by
+figuring out what each column means, by noticing pairs of columns that
+move together, and by flagging values that look wrong.</p>
 <p>The result is qualitative. You get sentences like <em>“temperature
-decreases strongly with elevation”</em>, not Pearson coefficients.
-Numeric evidence is still on the object for anyone who wants it; the
-printed view stays calm.</p>
+decreases strongly with elevation”</em>. Numeric evidence (Pearson
+coefficients, F-statistics, p-values) is still on the object for anyone
+who wants it; the printed view stays skimmable.</p>
 <p>There is one entry point, <code><a href="../reference/frame.html">frame()</a></code>, and four reader
 functions:</p>
 <ul>
-<li><p><code>print(frame(df))</code> — narrative overview.</p></li>
-<li><p><code>relationships(frame(df))</code> — pairs grouped as
+<li><p><code>print(frame(df))</code>: narrative overview.</p></li>
+<li><p><code>relationships(frame(df))</code>: pairs grouped as
 meaningful, suspicious, structural, or ignored.</p></li>
-<li><p><code>anomalies(frame(df))</code> — per-column oddities.</p></li>
-<li><p><code>details(frame(df))</code> — methods, roles, skipped rules,
+<li><p><code>anomalies(frame(df))</code>: per-column oddities.</p></li>
+<li><p><code>details(frame(df))</code>: methods, roles, skipped rules,
 backend.</p></li>
 </ul>
 </div>
@@ -127,7 +117,7 @@ backend.</p></li>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/framedf"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pak</span><span class="op">(</span><span class="st">"gcol33/framedf"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="a-first-look">A First Look<a class="anchor" aria-label="anchor" href="#a-first-look"></a>
@@ -160,7 +150,7 @@ backend.</p></li>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Structure</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
-<span><span class="co">#&gt; Looks like a repeated-measure observational dataframe.</span></span>
+<span><span class="co">#&gt; Looks like a spatial repeated-measure observational dataframe.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Detected temporal structure:</span></span>
 <span><span class="co">#&gt; • year</span></span>
@@ -176,27 +166,27 @@ backend.</p></li>
 <span><span class="co">#&gt; • repeated observations within plot_id</span></span>
 <span><span class="co">#&gt; • observations grouped by country</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Possible compositional structure:</span></span>
+<span><span class="co">#&gt; • cover_a</span></span>
+<span><span class="co">#&gt; • cover_b</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Relationships</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
 <span><span class="co">#&gt; temperature strongly decreases with elevation</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; cover_b strongly decreases with cover_a</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; observer identity appears to influence richness estimates</span></span>
-<span><span class="co">#&gt; plot_id identity appears to influence elevation estimates</span></span>
-<span><span class="co">#&gt;   possible observer effect</span></span>
-<span><span class="co">#&gt; plot_id identity appears to influence richness estimates</span></span>
-<span><span class="co">#&gt;   possible observer effect</span></span>
-<span><span class="co">#&gt; plot_id identity appears to influence cover_a estimates</span></span>
-<span><span class="co">#&gt;   possible observer effect</span></span>
-<span><span class="co">#&gt; plot_id identity appears to influence temperature estimates</span></span>
-<span><span class="co">#&gt;   possible observer effect</span></span>
-<span><span class="co">#&gt; plot_id identity appears to influence cover_b estimates</span></span>
-<span><span class="co">#&gt;   possible observer effect</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; plot_id appears to structure both elevation, richness, cover_a, temperature, and cover_b</span></span>
+<span><span class="co">#&gt;   possible dataset effect</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; cover_a and cover_b behave as constrained complements</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Anomalies</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
-<span><span class="co">#&gt; richness contains a noticeable number of outliers</span></span>
+<span><span class="co">#&gt; richness contains extreme values relative to most observations</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Ignored relationships</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
@@ -207,13 +197,13 @@ backend.</p></li>
 <p>The four sections of the print output map onto the four parts of any
 first-look conversation:</p>
 <ul>
-<li><p><strong>Structure</strong> — what kind of dataframe is this? How
+<li><p><strong>Structure</strong>: what kind of dataframe is this? How
 is it shaped, what identifies a row, what is the temporal/spatial
 axis?</p></li>
-<li><p><strong>Relationships</strong> — what moves with what? Which
+<li><p><strong>Relationships</strong>: what moves with what? Which
 patterns are real and which feel like artefacts?</p></li>
-<li><p><strong>Anomalies</strong> — what looks wrong?</p></li>
-<li><p><strong>Ignored</strong> — what was excluded from screening, and
+<li><p><strong>Anomalies</strong>: what looks wrong?</p></li>
+<li><p><strong>Ignored</strong>: what was excluded from screening, and
 why?</p></li>
 </ul>
 </div>
@@ -246,40 +236,7 @@ why?</p></li>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; suspicious</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
-<span><span class="co">#&gt; elevation ~ plot_id</span></span>
-<span><span class="co">#&gt;   pattern: group effect</span></span>
-<span><span class="co">#&gt;   strength: moderate</span></span>
-<span><span class="co">#&gt;   stability: high</span></span>
-<span><span class="co">#&gt;   method: categorical numeric screen</span></span>
-<span><span class="co">#&gt;   concern: possible observer effect</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; richness ~ plot_id</span></span>
-<span><span class="co">#&gt;   pattern: group effect</span></span>
-<span><span class="co">#&gt;   strength: moderate</span></span>
-<span><span class="co">#&gt;   stability: high</span></span>
-<span><span class="co">#&gt;   method: categorical numeric screen</span></span>
-<span><span class="co">#&gt;   concern: possible observer effect</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; cover_a ~ plot_id</span></span>
-<span><span class="co">#&gt;   pattern: group effect</span></span>
-<span><span class="co">#&gt;   strength: moderate</span></span>
-<span><span class="co">#&gt;   stability: high</span></span>
-<span><span class="co">#&gt;   method: categorical numeric screen</span></span>
-<span><span class="co">#&gt;   concern: possible observer effect</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; temperature ~ plot_id</span></span>
-<span><span class="co">#&gt;   pattern: group effect</span></span>
-<span><span class="co">#&gt;   strength: moderate</span></span>
-<span><span class="co">#&gt;   stability: high</span></span>
-<span><span class="co">#&gt;   method: categorical numeric screen</span></span>
-<span><span class="co">#&gt;   concern: possible observer effect</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; cover_b ~ plot_id</span></span>
-<span><span class="co">#&gt;   pattern: group effect</span></span>
-<span><span class="co">#&gt;   strength: moderate</span></span>
-<span><span class="co">#&gt;   stability: high</span></span>
-<span><span class="co">#&gt;   method: categorical numeric screen</span></span>
-<span><span class="co">#&gt;   concern: possible observer effect</span></span>
+<span><span class="co">#&gt; elevation,richness,cover_a,temperature,cover_b ~ plot_id</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; structural</span></span>
 <span><span class="co">#&gt; ────────────────</span></span>
@@ -395,10 +352,10 @@ the <code>...</code> of <code><a href="../reference/frame.html">frame()</a></cod
 </h2>
 <ul>
 <li>
-<a href="workflows.html">Workflows</a> — practical examples (large
+<a href="workflows.html">Workflows</a>: practical examples (large
 data, repeated measures, observer effects).</li>
 <li>
-<a href="roles.html">Roles and rules</a> — what each role means and
+<a href="roles.html">Roles and rules</a>: what each role means and
 why some columns are excluded from screening.</li>
 </ul>
 </div>

@@ -19,21 +19,11 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Roles and Rules">
 </head>
-<body>
-<p>
-
-
-
-
-
-
-
-
-  pkgdown/mathjax-config.html
+<body>pkgdown/mathjax-config.html
 
   
 
-  </p>
+  
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -108,13 +98,13 @@ cues used to assign it, and the screening behaviour it triggers.</p>
 </h2>
 <p>A correlation matrix treats <code>row_id</code> and
 <code>temperature</code> identically. They are both numeric, after all.
-But conceptually they are not the same column — <code>row_id</code> is
-bookkeeping, and a strong correlation between <code>row_id</code> and
-<code>temperature</code> is almost always a sign that the data is sorted
-by time, not a real association.</p>
+But conceptually they are different: <code>row_id</code> is bookkeeping,
+and a strong correlation between <code>row_id</code> and
+<code>temperature</code> usually reflects sort order rather than
+association.</p>
 <p>Role inference is what lets <code>framedf</code> say <em>“latitude
 was ignored because it is a spatial coordinate, screened separately as
-drift”</em> instead of just dumping a Pearson coefficient.</p>
+drift”</em> in plain language.</p>
 </div>
 <div class="section level2">
 <h2 id="the-roles">The Roles<a class="anchor" aria-label="anchor" href="#the-roles"></a>

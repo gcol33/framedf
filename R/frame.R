@@ -3,16 +3,16 @@
 #' `frame()` reads a data frame, infers a semantic role for each column
 #' (identifier, temporal, spatial, categorical, continuous, ...), screens
 #' all sensible pairs of columns for relationships, and surfaces a small
-#' set of anomalies in a single pass. The result is a calm, qualitative
-#' summary suitable for the first thirty seconds of working with an
-#' unfamiliar dataset, not a model fit.
+#' set of anomalies in a single pass. The result is a qualitative summary
+#' suitable for the first thirty seconds of working with an unfamiliar
+#' dataset.
 #'
-#' Three reader functions consume the result:
+#' Reader functions consume the result:
 #'
-#' * [print.frame_df()] — narrative overview (the default `print(frame(df))`)
-#' * [relationships()] — meaningful, suspicious, structural, and ignored pairs
-#' * [anomalies()]      — per-column oddities (range, distribution, capitalization)
-#' * [details()]        — analysis mode, column roles, skipped rules, backend
+#' * [print.frame_df()]: narrative overview (the default `print(frame(df))`)
+#' * [relationships()]: meaningful, suspicious, structural, and ignored pairs
+#' * [anomalies()]: per-column oddities (range, distribution, capitalization)
+#' * [details()]: analysis mode, column roles, skipped rules, backend
 #'
 #' @param data A data frame.
 #' @param adjustment Optional character vector of column names to partial
@@ -54,6 +54,8 @@ frame <- function(data, adjustment = NULL, ...) {
   structure_ <- .summarise_structure(data, roles, fps)
   rel        <- .screen_relationships(data, roles, fps, settings, primitives)
   anomalies  <- .detect_anomalies(data, roles, fps, settings)
+  missing_   <- .detect_missingness(data, roles, fps, settings)
+  inflation_ <- .detect_inflation(data, roles, fps, settings)
 
   structure(
     list(
@@ -70,6 +72,8 @@ frame <- function(data, adjustment = NULL, ...) {
       ignored_cols          = rel$ignored_cols,
       n_pairs_screened      = rel$n_pairs_screened,
       anomaly_findings      = anomalies,
+      missingness_findings  = missing_,
+      inflation_findings    = inflation_,
       settings              = settings
     ),
     class = "frame_df"
@@ -109,7 +113,7 @@ frame <- function(data, adjustment = NULL, ...) {
 #'     as rare.}
 #'   \item{`seed`}{Seed used by the subsampling layer.}
 #'   \item{`adjustment`}{Optional column names to partial out before
-#'     numeric–numeric screening.}
+#'     numeric pair screening.}
 #' }
 #' @return A named list of settings.
 #' @export

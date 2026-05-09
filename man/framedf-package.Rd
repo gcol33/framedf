@@ -4,13 +4,13 @@
 \name{framedf-package}
 \alias{framedf-package}
 \alias{framedf}
-\title{framedf: Calm Triage of Unfamiliar Data Frames}
+\title{framedf: First-Pass Triage of Unfamiliar Data Frames}
 \description{
 \code{framedf} looks at a data frame the way an experienced analyst does in
 the first thirty seconds: it infers what each column means, screens
 every sensible pair for relationships, and lists the anomalies worth
-reading first. The output is qualitative — direction, strength,
-stability — not raw test statistics.
+reading first. The output is qualitative: direction, strength, and
+stability, expressed as sentences.
 }
 \section{Entry points}{
 

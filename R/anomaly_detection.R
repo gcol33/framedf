@@ -35,11 +35,13 @@
     if (role == "categorical") {
       findings <- c(findings, .check_categorical(col, nm, settings))
     }
+    if (role == "temporal") {
+      findings <- c(findings, .check_temporal_gap(col, nm))
+    }
   }
 
-  # Cross-column compositional check: pairs of compositional cols whose sum
-  # occasionally exceeds 1 (or 100, depending on detected scale).
   findings <- c(findings, .check_composition_pairs(df, roles))
+  findings <- c(findings, .check_coord_swap(df, roles))
 
   findings
 }
@@ -142,6 +144,66 @@
         cols   = pair,
         tag    = "exceed_expected_totals"
       )
+    }
+  }
+  out
+}
+
+.check_temporal_gap <- function(col, name) {
+  vals <- if (inherits(col, c("Date", "POSIXct", "POSIXlt"))) {
+    as.numeric(col[!is.na(col)])
+  } else {
+    suppressWarnings(as.numeric(col[!is.na(col)]))
+  }
+  vals <- vals[!is.na(vals)]
+  if (length(vals) < 30L) return(list())
+
+  q   <- stats::quantile(vals, c(0.05, 0.95))
+  iqr <- q[[2L]] - q[[1L]]
+  if (iqr <= 0) return(list())
+  lo  <- q[[1L]] - 1.5 * iqr
+  hi  <- q[[2L]] + 1.5 * iqr
+  outside <- which(vals < lo | vals > hi)
+  if (length(outside) == 0L || length(outside) > length(vals) * 0.05) {
+    return(list())
+  }
+  list(list(
+    column = name, type = "temporal_gap",
+    method = "core_period", n = length(outside),
+    bounds = c(lo, hi),
+    tag    = "isolated_temporal"
+  ))
+}
+
+# Detect coordinates that may have been swapped: a column tagged coord_lat
+# whose values look more like longitude (and vice versa). We look at the
+# range and require both columns to exist.
+.check_coord_swap <- function(df, roles) {
+  lat_cols <- names(roles)[roles == "coord_lat"]
+  lon_cols <- names(roles)[roles == "coord_lon"]
+  if (length(lat_cols) == 0L || length(lon_cols) == 0L) return(list())
+
+  out <- list()
+  for (lat_nm in lat_cols) {
+    for (lon_nm in lon_cols) {
+      lat <- df[[lat_nm]]; lon <- df[[lon_nm]]
+      ok  <- !is.na(lat) & !is.na(lon)
+      if (sum(ok) < 30L) next
+      lat_v <- lat[ok]; lon_v <- lon[ok]
+      lat_outside <- mean(abs(lat_v) > 90)
+      lon_resembles_lat <- mean(abs(lon_v) <= 90)
+      lat_resembles_lon <- mean(abs(lat_v) > 90 & abs(lat_v) <= 180)
+      if (lat_outside > 0.01 && lat_resembles_lon > 0.5 &&
+          lon_resembles_lat > 0.5) {
+        out[[length(out) + 1L]] <- list(
+          column = paste(lat_nm, lon_nm, sep = "+"),
+          type   = "possible_swap",
+          method = "coord_range_check",
+          cols   = c(lat_nm, lon_nm),
+          n      = round(lat_outside * sum(ok)),
+          tag    = "possible_coord_swap"
+        )
+      }
     }
   }
   out

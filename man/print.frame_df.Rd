@@ -15,9 +15,9 @@
 The input invisibly.
 }
 \description{
-Prints a calm, qualitative narrative of the data frame. The output is
+Prints a qualitative narrative of the data frame. The output is
 organised into four sections: Structure, Relationships, Anomalies, and
 Ignored. No raw correlation values, p-values, or test statistics are
-shown -- those live in \code{\link[=relationships]{relationships()}} and \code{\link[=details]{details()}} for readers
+shown; those live in \code{\link[=relationships]{relationships()}} and \code{\link[=details]{details()}} for readers
 who want them.
 }

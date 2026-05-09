@@ -21,24 +21,25 @@ library(framedf)
 
 ## What `framedf` Does
 
-`framedf` is a first-pass diagnostic for an unfamiliar data frame. It tries
-to read the data the way a careful colleague would — by figuring out what
-each column means, by noticing pairs of columns that move together, and by
+`framedf` is a first-pass diagnostic for an unfamiliar data frame. It reads
+the data the way a careful colleague would: by figuring out what each
+column means, by noticing pairs of columns that move together, and by
 flagging values that look wrong.
 
 The result is qualitative. You get sentences like *"temperature decreases
-strongly with elevation"*, not Pearson coefficients. Numeric evidence is
-still on the object for anyone who wants it; the printed view stays calm.
+strongly with elevation"*. Numeric evidence (Pearson coefficients,
+F-statistics, p-values) is still on the object for anyone who wants it;
+the printed view stays skimmable.
 
 There is one entry point, `frame()`, and four reader functions:
 
-* `print(frame(df))` — narrative overview.
+* `print(frame(df))`: narrative overview.
 
-* `relationships(frame(df))` — pairs grouped as meaningful, suspicious,
+* `relationships(frame(df))`: pairs grouped as meaningful, suspicious,
   structural, or ignored.
-* `anomalies(frame(df))` — per-column oddities.
+* `anomalies(frame(df))`: per-column oddities.
 
-* `details(frame(df))` — methods, roles, skipped rules, backend.
+* `details(frame(df))`: methods, roles, skipped rules, backend.
 
 ## Installation
 
@@ -78,13 +79,13 @@ print(fd)
 The four sections of the print output map onto the four parts of any
 first-look conversation:
 
-* **Structure** — what kind of dataframe is this? How is it shaped, what
+* **Structure**: what kind of dataframe is this? How is it shaped, what
   identifies a row, what is the temporal/spatial axis?
-* **Relationships** — what moves with what? Which patterns are real and
+* **Relationships**: what moves with what? Which patterns are real and
   which feel like artefacts?
-* **Anomalies** — what looks wrong?
+* **Anomalies**: what looks wrong?
 
-* **Ignored** — what was excluded from screening, and why?
+* **Ignored**: what was excluded from screening, and why?
 
 ## Drill Down
 
@@ -129,7 +130,7 @@ frame(df,
 
 ## Next Steps
 
-* [Workflows](workflows.html) — practical examples (large data, repeated
+* [Workflows](workflows.html): practical examples (large data, repeated
   measures, observer effects).
-* [Roles and rules](roles.html) — what each role means and why some
+* [Roles and rules](roles.html): what each role means and why some
   columns are excluded from screening.

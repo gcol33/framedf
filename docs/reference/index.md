@@ -42,4 +42,4 @@ Inspect what
 
 - [`framedf-package`](https://gillescolling.com/framedf/reference/framedf-package.md)
   [`framedf`](https://gillescolling.com/framedf/reference/framedf-package.md)
-  : framedf: Calm Triage of Unfamiliar Data Frames
+  : framedf: First-Pass Triage of Unfamiliar Data Frames

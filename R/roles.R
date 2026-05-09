@@ -8,7 +8,7 @@
   "id", "admin_index", "group_id",
   "temporal", "coord_lat", "coord_lon",
   "compositional", "measurement", "ratio_unit",
-  "categorical", "flag",
+  "categorical", "flag", "sparse_binary",
   "near_constant", "constant",
   "date", "unknown"
 )
@@ -36,8 +36,13 @@
 .classify_column <- function(col, name, nrow_df, settings) {
   if (inherits(col, c("Date", "POSIXct", "POSIXlt"))) return("temporal")
   if (is.logical(col)) {
-    n_uniq <- length(unique(col[!is.na(col)]))
+    vals   <- col[!is.na(col)]
+    n_uniq <- length(unique(vals))
     if (n_uniq <= 1L) return("constant")
+    if (length(vals) > 0L) {
+      p <- mean(vals)
+      if (p < 0.05 || p > 0.95) return("sparse_binary")
+    }
     return("flag")
   }
 
@@ -99,28 +104,85 @@
 }
 
 # Per-column descriptive statistics stored for later display and rule logic.
+# Computed once per data frame; everything downstream reads from here so we
+# do not recompute the same summaries.
 .fingerprint_columns <- function(df) {
   lapply(names(df), function(nm) {
     col     <- df[[nm]]
-    n_valid <- sum(!is.na(col))
+    n_total <- length(col)
     n_miss  <- sum(is.na(col))
-    n_uniq  <- length(unique(col[!is.na(col)]))
+    n_valid <- n_total - n_miss
+    vals    <- col[!is.na(col)]
+    n_uniq  <- length(unique(vals))
 
     fp <- list(
-      name     = nm,
-      class    = class(col),
-      n_valid  = n_valid,
-      n_miss   = n_miss,
-      n_unique = n_uniq
+      name         = nm,
+      class        = class(col),
+      type         = typeof(col),
+      n_valid      = n_valid,
+      n_miss       = n_miss,
+      n_missing    = n_miss,
+      prop_missing = if (n_total > 0) n_miss / n_total else 0,
+      n_unique     = n_uniq,
+      prop_unique  = if (n_valid > 0) n_uniq / n_valid else 0,
+      is_numeric   = is.numeric(col),
+      is_integerish = is.numeric(col) && n_valid > 0 &&
+                      all(vals == floor(vals)),
+      is_character = is.character(col),
+      is_factor    = is.factor(col),
+      is_logical   = is.logical(col),
+      is_date_like = inherits(col, c("Date", "POSIXct", "POSIXlt"))
     )
 
     if (is.numeric(col) && n_valid > 0) {
-      fp$mean   <- mean(col, na.rm = TRUE)
-      fp$sd     <- stats::sd(col, na.rm = TRUE)
-      fp$min    <- min(col, na.rm = TRUE)
-      fp$max    <- max(col, na.rm = TRUE)
-      fp$median <- stats::median(col, na.rm = TRUE)
+      fp$mean      <- mean(vals)
+      fp$sd        <- stats::sd(vals)
+      fp$min       <- min(vals)
+      fp$max       <- max(vals)
+      fp$median    <- stats::median(vals)
+      fp$quantiles <- stats::quantile(
+        vals, probs = c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99),
+        names = TRUE
+      )
+      fp$zero_fraction <- mean(vals == 0)
+      fp$is_sparse <- fp$zero_fraction > 0.5
+    } else {
+      fp$zero_fraction <- 0
+      fp$is_sparse <- FALSE
     }
+
+    if (n_valid > 0L) {
+      tab <- sort(table(vals), decreasing = TRUE)
+      fp$top_values <- utils::head(tab, 5L)
+    } else {
+      fp$top_values <- integer(0)
+    }
+
+    if (n_valid > 0L && n_uniq > 1L) {
+      p <- as.numeric(table(vals)) / n_valid
+      ent <- -sum(p * log(p))
+      fp$entropy_like_score <- ent / log(n_uniq)
+    } else {
+      fp$entropy_like_score <- 0
+    }
+
+    if (n_valid > 0L) {
+      tab <- tabulate(match(vals, unique(vals)))
+      fp$dominant_freq <- max(tab) / n_valid
+      fp$is_near_constant <- fp$dominant_freq > 0.95
+    } else {
+      fp$dominant_freq <- 1
+      fp$is_near_constant <- TRUE
+    }
+
+    if (is.numeric(col) && n_valid >= 30L && n_uniq >= 10L) {
+      fp$histogram_bins <- graphics::hist(
+        vals, breaks = 20L, plot = FALSE
+      )$counts
+    } else {
+      fp$histogram_bins <- integer(0)
+    }
+
     fp
   }) |> stats::setNames(names(df))
 }
@@ -137,7 +199,10 @@
 
 .name_is_id <- function(name) {
   grepl("(^|[._-])(id|uuid|guid|key|code)([._-]|$)", tolower(name)) ||
-    grepl("(plot|sample|site|subject|observation|station)id$", tolower(name))
+    grepl("(plot|sample|site|subject|observation|station|dataset)id$",
+          tolower(name)) ||
+    grepl("[a-zA-Z](ID|Id)$", name) ||
+    grepl("[a-zA-Z](Key|Code)$", name)
 }
 
 .name_is_lat <- function(nm_lo) {
@@ -151,7 +216,7 @@
 
 .range_is_lat <- function(vals) {
   if (length(vals) == 0L) return(FALSE)
-  # Allow up to 1% of values outside the legal range — those will be flagged
+  # Allow up to 1% of values outside the legal range; those will be flagged
   # as anomalies but do not disqualify the column from coord_lat.
   q <- stats::quantile(vals, c(0.01, 0.99))
   q[[1]] >= -90 && q[[2]] <= 90
@@ -226,6 +291,7 @@
     compositional = "compositional",
     categorical   = "categorical",
     flag          = "logical flag",
+    sparse_binary = "sparse binary",
     near_constant = "near-constant",
     constant      = "constant",
     date          = "date",

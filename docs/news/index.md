@@ -16,18 +16,18 @@ Initial public release.
 
 ### Reader functions
 
-- [`print.frame_df()`](https://gillescolling.com/framedf/reference/print.frame_df.md)
-  — narrative overview with **Structure**, **Relationships**,
+- [`print.frame_df()`](https://gillescolling.com/framedf/reference/print.frame_df.md):
+  narrative overview with **Structure**, **Relationships**,
   **Anomalies**, and **Ignored** sections. Output is qualitative; no raw
   test statistics in the default view.
-- [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md)
-  — relationships grouped into **meaningful**, **suspicious**,
+- [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md):
+  relationships grouped into **meaningful**, **suspicious**,
   **structural**, and **ignored** with direction, strength, stability,
   and method per pair.
-- [`anomalies()`](https://gillescolling.com/framedf/reference/anomalies.md)
-  — per-column oddities grouped by pattern.
-- [`details()`](https://gillescolling.com/framedf/reference/details.md)
-  — analysis mode, column roles, skipped rules, backend.
+- [`anomalies()`](https://gillescolling.com/framedf/reference/anomalies.md):
+  per-column oddities grouped by pattern.
+- [`details()`](https://gillescolling.com/framedf/reference/details.md):
+  analysis mode, column roles, skipped rules, backend.
 
 ### Screening
 

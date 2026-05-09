@@ -8,27 +8,18 @@
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Triage a Data Frame for Structure, Relationships, and Anomalies — frame"><meta name="description" content="frame() reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
-set of anomalies in a single pass. The result is a calm, qualitative
-summary suitable for the first thirty seconds of working with an
-unfamiliar dataset, not a model fit."><meta property="og:description" content="frame() reads a data frame, infers a semantic role for each column
+set of anomalies in a single pass. The result is a qualitative summary
+suitable for the first thirty seconds of working with an unfamiliar
+dataset."><meta property="og:description" content="frame() reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
-set of anomalies in a single pass. The result is a calm, qualitative
-summary suitable for the first thirty seconds of working with an
-unfamiliar dataset, not a model fit."></head><body><p>
-
-
-
-
-
-
-
-
-  pkgdown/mathjax-config.html
+set of anomalies in a single pass. The result is a qualitative summary
+suitable for the first thirty seconds of working with an unfamiliar
+dataset."></head><body>pkgdown/mathjax-config.html
 
   
 
-  </p>
+  
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -79,9 +70,9 @@ unfamiliar dataset, not a model fit."></head><body><p>
     <p><code>frame()</code> reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
-set of anomalies in a single pass. The result is a calm, qualitative
-summary suitable for the first thirty seconds of working with an
-unfamiliar dataset, not a model fit.</p>
+set of anomalies in a single pass. The result is a qualitative summary
+suitable for the first thirty seconds of working with an unfamiliar
+dataset.</p>
     </div>
 
     <div class="section level2">
@@ -116,10 +107,10 @@ findings, and the settings used.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Three reader functions consume the result:</p><ul><li><p><code><a href="print.frame_df.html">print.frame_df()</a></code> — narrative overview (the default <code>print(frame(df))</code>)</p></li>
-<li><p><code><a href="relationships.html">relationships()</a></code> — meaningful, suspicious, structural, and ignored pairs</p></li>
-<li><p><code><a href="anomalies.html">anomalies()</a></code>      — per-column oddities (range, distribution, capitalization)</p></li>
-<li><p><code><a href="details.html">details()</a></code>        — analysis mode, column roles, skipped rules, backend</p></li>
+    <p>Reader functions consume the result:</p><ul><li><p><code><a href="print.frame_df.html">print.frame_df()</a></code>: narrative overview (the default <code>print(frame(df))</code>)</p></li>
+<li><p><code><a href="relationships.html">relationships()</a></code>: meaningful, suspicious, structural, and ignored pairs</p></li>
+<li><p><code><a href="anomalies.html">anomalies()</a></code>: per-column oddities (range, distribution, capitalization)</p></li>
+<li><p><code><a href="details.html">details()</a></code>: analysis mode, column roles, skipped rules, backend</p></li>
 </ul></div>
 
     <div class="section level2">

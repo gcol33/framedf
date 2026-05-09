@@ -5,8 +5,8 @@
 #' is described qualitatively (direction, strength, stability, method).
 #'
 #' Numeric evidence (correlation coefficients, F-statistics, p-values) is
-#' available on the returned object — the printed view is meant to be calm
-#' and skimmable.
+#' available on the returned object; the printed view is meant to be
+#' skimmable.
 #'
 #' @param x A `frame_df` object.
 #' @param ... Additional arguments (unused).

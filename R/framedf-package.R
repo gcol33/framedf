@@ -1,10 +1,10 @@
-#' framedf: Calm Triage of Unfamiliar Data Frames
+#' framedf: First-Pass Triage of Unfamiliar Data Frames
 #'
 #' `framedf` looks at a data frame the way an experienced analyst does in
 #' the first thirty seconds: it infers what each column means, screens
 #' every sensible pair for relationships, and lists the anomalies worth
-#' reading first. The output is qualitative — direction, strength,
-#' stability — not raw test statistics.
+#' reading first. The output is qualitative: direction, strength, and
+#' stability, expressed as sentences.
 #'
 #' @section Entry points:
 #' \describe{
@@ -23,4 +23,5 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats complete.cases median pf pt quantile sd setNames
 #' @importFrom utils combn head
+#' @importFrom graphics hist
 "_PACKAGE"
