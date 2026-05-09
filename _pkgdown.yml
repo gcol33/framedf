@@ -1,0 +1,77 @@
+url: https://gillescolling.com/framedf
+template:
+  bootstrap: 5
+  bootswatch: sandstone
+  light-switch: yes
+  math-rendering: mathjax
+  includes:
+    in_header: pkgdown/mathjax-config.html
+figures:
+  dev: svglite
+  fig.ext: svg
+  bg: '#F5F6F8'
+home:
+  title: 'framedf: Calm Triage of Unfamiliar Data Frames'
+  description: |
+    A first-pass diagnostic for data frames. Infers a semantic role for
+    every column, screens all sensible pairs for relationships, and lists
+    anomalies — qualitatively, not as raw test statistics.
+authors:
+  Gilles Colling:
+    href: https://github.com/gcol33
+navbar:
+  structure:
+    left:
+    - intro
+    - reference
+    - articles
+    - news
+    right:
+    - search
+    - lightswitch
+    - github
+  components:
+    intro:
+      text: Get Started
+      href: articles/quickstart.html
+    articles:
+      text: Articles
+      menu:
+      - text: Quick Start
+        href: articles/quickstart.html
+      - text: Workflows
+        href: articles/workflows.html
+      - text: Roles and Rules
+        href: articles/roles.html
+    github:
+      icon: fab fa-github
+      href: https://github.com/gcol33/framedf
+      aria-label: GitHub
+reference:
+- title: Triage
+  desc: Build a triage object from a data frame.
+  contents:
+  - frame
+  - framedf_settings
+- title: Reader functions
+  desc: Inspect what `frame()` found.
+  contents:
+  - print.frame_df
+  - relationships
+  - anomalies
+  - details
+- title: Package
+  contents: framedf-package
+articles:
+- title: Getting Started
+  navbar: ~
+  contents: quickstart
+- title: Practical Guides
+  navbar: ~
+  contents:
+  - workflows
+  - roles
+footer:
+  structure:
+    left: developed_by
+    right: built_with

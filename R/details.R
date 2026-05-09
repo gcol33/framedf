@@ -1,85 +1,91 @@
-#' Show methods, thresholds, sample sizes, and skipped rules
+#' Show Methods, Roles, and Skipped Rules
+#'
+#' `details()` prints how `frame()` did its work: the screening mode it
+#' chose, the role assigned to each column, the rules that caused some
+#' pairs to be skipped, and which backend was used.
+#'
+#' This is the place to look when an output from [print.frame_df()] or
+#' [relationships()] surprises you and you want to know why a particular
+#' pair was or was not screened.
 #'
 #' @param x A `frame_df` object.
 #' @param ... Additional arguments (unused).
+#' @return The input invisibly.
+#'
+#' @examples
+#' df <- data.frame(x = 1:30, y = rnorm(30))
+#' details(frame(df))
 #' @export
 details <- function(x, ...) UseMethod("details")
 
 #' @rdname details
 #' @export
 details.frame_df <- function(x, ...) {
-  cat("frame_df details\n\n")
+  cat("Details\n\n")
 
-  # Data dimensions
-  cat(sprintf("Data:  %d rows × %d columns\n\n",
-              x$data_summary$nrow, x$data_summary$ncol))
-
-  # Backend
-  use_cpp <- isTRUE(.framedf_env$use_cpp)
-  cat(sprintf("Backend: %s\n\n", if (use_cpp) "C++ (Rcpp)" else "R prototype"))
-
-  # Thresholds
-  s <- x$settings
-  cat("Thresholds\n")
-  cat(sprintf("  strong   ≥ %.2f\n", s$strong_threshold))
-  cat(sprintf("  moderate ≥ %.2f\n", s$moderate_threshold))
-  cat(sprintf("  weak     ≥ %.2f\n", s$weak_threshold))
-  cat(sprintf("  min_obs    %d\n",   s$min_obs))
-  if (!is.null(s$adjustment)) {
-    cat(sprintf("  adjustment: %s\n", paste(s$adjustment, collapse = ", ")))
-  }
+  .section("Analysis mode")
+  for (line in .analysis_mode_lines(x)) cat(line, "\n", sep = "")
   cat("\n")
 
-  # Methods
-  cat("Methods\n")
-  cat("  numeric-numeric:    Pearson r via OLS (with QR residualisation if adjusted)\n")
-  cat("  categorical-numeric: one-way ANOVA, η²\n")
-  cat("  outlier detection:  Tukey IQR fence\n")
-  cat("  skewness:           moment-based (m3 / m2^(3/2))\n")
+  .section("Column roles")
+  for (line in .column_role_lines(x)) cat(line, "\n", sep = "")
   cat("\n")
 
-  # Column fingerprints
-  cat("Columns\n")
-  fps <- x$column_fingerprints
-  for (nm in names(fps)) {
-    fp   <- fps[[nm]]
-    role <- x$roles[[nm]]
-    n_tot <- fp$n_valid + fp$n_miss
-    miss_pct <- if (n_tot > 0) 100 * fp$n_miss / n_tot else 0
-    line <- sprintf("  %-22s %-14s role=%-14s n_valid=%-6d miss=%.1f%%",
-                    nm, paste(fp$class, collapse = "/"), role,
-                    fp$n_valid, miss_pct)
-    if (!is.null(fp$mean)) {
-      line <- paste0(line, sprintf("  mean=%-.4g  sd=%-.4g", fp$mean, fp$sd))
-    } else {
-      line <- paste0(line, sprintf("  n_unique=%d", fp$n_unique))
-    }
-    cat(line, "\n")
-  }
+  .section("Skipped relationship rules")
+  for (line in .skipped_rule_lines(x)) cat(line, "\n", sep = "")
   cat("\n")
 
-  # Ignored columns
-  if (length(x$ignored_cols) > 0L) {
-    cat("Ignored columns\n")
-    roles <- x$roles
-    for (nm in x$ignored_cols) {
-      reason <- .role_ignore_reason(roles[[nm]])
-      if (is.null(reason)) reason <- paste0("role = ", roles[[nm]])
-      cat(sprintf("  %s was ignored because %s\n", nm, reason))
-    }
-    cat("\n")
-  }
-
-  # Skipped pairs (insufficient obs)
-  ignored_pairs <- x$ignored_pairs
-  if (length(ignored_pairs) > 0L) {
-    reason_tbl <- table(sapply(ignored_pairs, `[[`, "reason"))
-    cat("Skipped pairs\n")
-    for (r in names(reason_tbl)) {
-      cat(sprintf("  %s: %d pair(s)\n", r, reason_tbl[[r]]))
-    }
-    cat("\n")
-  }
+  .section("Backend")
+  for (line in .backend_lines(x)) cat(line, "\n", sep = "")
+  cat("\n")
 
   invisible(x)
+}
+
+# ---------------------------------------------------------------------------
+
+.analysis_mode_lines <- function(x) {
+  s <- x$settings
+  if (x$data_summary$nrow > s$subsample_threshold) {
+    c(
+      "relationship screening used progressive subsampling",
+      "low-association pairs were dropped after a small probe sample",
+      "surviving pairs were re-screened on a larger confirmation sample"
+    )
+  } else {
+    c(
+      "relationship screening used the full data",
+      "all pairs above the minimum complete-case count were screened directly"
+    )
+  }
+}
+
+.column_role_lines <- function(x) {
+  roles <- x$roles
+  vapply(names(roles), function(nm) {
+    sprintf("%s: %s", nm, .role_pretty(roles[[nm]]))
+  }, character(1L), USE.NAMES = FALSE)
+}
+
+.skipped_rule_lines <- function(x) {
+  X <- .SYM_TIMES()
+  c(
+    sprintf("identifier %s anything: skipped", X),
+    sprintf("administrative index %s anything: skipped", X),
+    sprintf("near-constant or constant %s anything: skipped", X),
+    sprintf("temporal %s measurement: not screened symmetrically; checked as drift instead", X),
+    sprintf("coordinate %s measurement: not screened symmetrically; checked as drift instead", X),
+    sprintf("many-level grouping %s continuous: screened, but flagged as observer-style if strong", X)
+  )
+}
+
+.backend_lines <- function(x) {
+  use_cpp <- isTRUE(.framedf_env$use_cpp)
+  c(
+    sprintf("primitives: %s", if (use_cpp) "C++ (Rcpp)" else "R"),
+    "numeric numeric pairs: screened by ordinary least squares (with QR residualisation when adjusted)",
+    "categorical numeric pairs: one-way analysis-of-variance summaries, eta squared as effect size",
+    "compositional pairs: pairwise sum stability under coefficient of variation",
+    "drift checks: simple linear fits of spatial coordinates against time"
+  )
 }

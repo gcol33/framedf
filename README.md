@@ -1,0 +1,173 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
+
+# framedf
+
+**Calm triage of unfamiliar data frames.**
+
+`framedf` reads a data frame the way an experienced analyst does in the first thirty seconds: it infers what each column means, screens every sensible pair for relationships, and lists the anomalies worth reading first. The output is qualitative — direction, strength, stability — not raw test statistics.
+
+## Quick Start
+
+```r
+library(framedf)
+
+set.seed(1)
+df <- data.frame(
+  plot_id    = sample(1:40, 200, replace = TRUE),
+  year       = sample(2010:2020, 200, replace = TRUE),
+  latitude   = runif(200, 40, 50),
+  longitude  = runif(200, 5, 15),
+  elevation  = runif(200, 0, 2500),
+  richness   = rpois(200, 30)
+)
+df$temperature <- 20 - df$elevation / 200 + rnorm(200)
+
+print(frame(df))
+```
+
+```
+framedf
+
+200 rows × 7 columns
+
+Structure
+────────────────
+Looks like a spatially and temporally indexed observational dataframe.
+
+Detected temporal structure:
+• year
+
+Detected spatial structure:
+• longitude
+• latitude
+
+Likely identifiers:
+• plot_id
+
+Relationships
+────────────────
+temperature strongly decreases with elevation
+
+Anomalies
+────────────────
+No anomalies detected by the default checks.
+
+Ignored relationships
+────────────────
+plot_id was ignored because it behaves like a grouping identifier
+year was ignored because it is a temporal column, screened separately as drift
+longitude was ignored because it is a spatial coordinate, screened separately as drift
+latitude was ignored because it is a spatial coordinate, screened separately as drift
+```
+
+## Statement of Need
+
+The first task with any new dataset is the same: figure out what each column is, which pairs of columns covary, and which values look wrong. Existing tools either produce dense statistical dumps (raw correlation matrices, autoreport tables) or shallow summaries (`str()`, `summary()`). Neither reads like a colleague telling you what they noticed.
+
+`framedf` was built for that conversational first pass. It
+
+* infers a semantic role for each column — identifier, temporal, spatial, categorical, continuous, compositional, near-constant — and uses that to decide which pairs to screen;
+* groups relationship findings into **meaningful** (real signal between measurements), **suspicious** (observer-like effects, sampling drift), and **structural** (compositional complements);
+* surfaces anomalies as qualitative patterns: implausible ranges, distributional outliers, inconsistent capitalisation, totals exceeding bounds;
+* scales to millions of rows through two-stage progressive subsampling on numeric pairs.
+
+It is *not* a model fit. It is the read-the-data-once pass that should happen before modelling.
+
+## Features
+
+### Reader functions
+
+* `frame()` — build a triage object from a data frame.
+* `print(frame(df))` — narrative overview with **Structure**, **Relationships**, **Anomalies**, **Ignored** sections.
+* `relationships()` — meaningful, suspicious, structural, and ignored pairs with direction, strength, stability.
+* `anomalies()` — per-column oddities grouped by qualitative pattern.
+* `details()` — analysis mode, column roles, skipped rules, and which backend was used.
+* `framedf_settings()` — every threshold is tunable.
+
+### What gets detected
+
+* **Roles**: identifier, administrative index, grouping identifier, temporal, latitude, longitude, continuous measurement, compositional (cover, share, percent), categorical, logical flag, near-constant, constant.
+* **Relationships**: linear association (with optional adjustment), one-way ANOVA-style group effects, temporal × spatial drift, constrained-complement compositional pairs.
+* **Anomalies**: Tukey-fence outliers, moment-based skew, implausible coordinate ranges, totals exceeding bounds, inconsistent capitalisation, very rare categorical levels.
+
+## Installation
+
+```r
+# install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
+## Usage Examples
+
+### Adjust for a confounder
+
+```r
+fd <- frame(df, adjustment = "elevation")
+relationships(fd)
+```
+
+When `adjustment` is supplied, every numeric–numeric screen is run on residualised values (QR-based partial-out), so confounded pairs no longer appear as meaningful.
+
+### Tune the strength thresholds
+
+```r
+fd <- frame(df,
+            strong_threshold   = 0.6,
+            moderate_threshold = 0.4,
+            weak_threshold     = 0.15)
+```
+
+### Inspect everything
+
+```r
+fd <- frame(df)
+print(fd)          # narrative overview
+relationships(fd)  # ordered by kind
+anomalies(fd)      # ordered by pattern
+details(fd)        # how the analysis was done
+```
+
+## How the Screening Works
+
+* **Numeric × numeric** — ordinary least squares, with QR residualisation when `adjustment` is set. On data frames larger than `subsample_threshold` (default 50 000 rows) framedf runs a small probe sample first, drops weak pairs, then re-screens survivors on a larger confirmation sample. Stability is reported as `high`, `medium`, or `low` depending on whether the two passes agree.
+* **Categorical × numeric** — one-way analysis of variance. The eta squared effect size becomes the strength tier. If the categorical column has many levels, looks like an identifier, and shows a strong group effect, the pair is reclassified as **suspicious** (a possible observer effect).
+* **Temporal × spatial** — a separate drift screen looks for sampling structure where the spatial coordinate moves systematically with time.
+* **Compositional pairs** — pairs of cover-like columns whose sum has a coefficient of variation below `compositional_cv` are marked structural.
+* **Identifier-like, near-constant, and date columns** are excluded from the symmetric pair sweep and listed in the **Ignored** section with a one-line reason.
+
+C++ primitives (Rcpp) handle the inner loops; the R layer is the one you read.
+
+## Documentation
+
+* [Get Started](https://gillescolling.com/framedf/articles/quickstart.html)
+* [Workflows](https://gillescolling.com/framedf/articles/workflows.html)
+* [Roles and rules](https://gillescolling.com/framedf/articles/roles.html)
+* [Full reference](https://gillescolling.com/framedf/reference/)
+
+## Support
+
+> "Software is like sex: it's better when it's free." — Linus Torvalds
+
+I'm a PhD student who builds R packages in my free time because I believe good tools should be free and open. I started these projects for my own work and figured others might find them useful too.
+
+If this package saved you some time, buying me a coffee is a nice way to say thanks. It helps with my coffee addiction.
+
+[![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
+
+## License
+
+MIT (see the LICENSE.md file)
+
+## Citation
+
+```bibtex
+@software{framedf,
+  author = {Colling, Gilles},
+  title  = {framedf: Calm Triage of Unfamiliar Data Frames},
+  year   = {2026},
+  url    = {https://github.com/gcol33/framedf}
+}
+```

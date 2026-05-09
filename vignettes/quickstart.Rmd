@@ -1,0 +1,135 @@
+---
+title: "Quick Start"
+author: "Gilles Colling"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+library(framedf)
+```
+
+## What `framedf` Does
+
+`framedf` is a first-pass diagnostic for an unfamiliar data frame. It tries
+to read the data the way a careful colleague would — by figuring out what
+each column means, by noticing pairs of columns that move together, and by
+flagging values that look wrong.
+
+The result is qualitative. You get sentences like *"temperature decreases
+strongly with elevation"*, not Pearson coefficients. Numeric evidence is
+still on the object for anyone who wants it; the printed view stays calm.
+
+There is one entry point, `frame()`, and four reader functions:
+
+* `print(frame(df))` — narrative overview.
+
+* `relationships(frame(df))` — pairs grouped as meaningful, suspicious,
+  structural, or ignored.
+* `anomalies(frame(df))` — per-column oddities.
+
+* `details(frame(df))` — methods, roles, skipped rules, backend.
+
+## Installation
+
+```{r, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
+## A First Look
+
+```{r}
+set.seed(1)
+n <- 300L
+df <- data.frame(
+  plot_id    = sample(1:60, n, replace = TRUE),
+  year       = sample(2010:2020, n, replace = TRUE),
+  latitude   = stats::runif(n, 40, 50),
+  longitude  = stats::runif(n, 5, 15),
+  elevation  = stats::runif(n, 0, 2500),
+  observer   = sample(letters[1:6], n, replace = TRUE),
+  country    = sample(c("AT", "DE", "CH"), n, replace = TRUE),
+  richness   = NA_real_,
+  cover_a    = stats::runif(n, 0, 1),
+  stringsAsFactors = FALSE
+)
+df$temperature <- 20 - df$elevation / 200 + stats::rnorm(n)
+df$richness    <- 5 + 0.4 * sqrt(stats::runif(n, 1, 100)) +
+                  2 * (df$observer == "a") + stats::rnorm(n)
+df$cover_b     <- 1 - df$cover_a
+```
+
+```{r}
+fd <- frame(df)
+print(fd)
+```
+
+The four sections of the print output map onto the four parts of any
+first-look conversation:
+
+* **Structure** — what kind of dataframe is this? How is it shaped, what
+  identifies a row, what is the temporal/spatial axis?
+* **Relationships** — what moves with what? Which patterns are real and
+  which feel like artefacts?
+* **Anomalies** — what looks wrong?
+
+* **Ignored** — what was excluded from screening, and why?
+
+## Drill Down
+
+```{r}
+relationships(fd)
+```
+
+```{r}
+anomalies(fd)
+```
+
+```{r}
+details(fd)
+```
+
+`details()` is the place to go when an output surprises you. It tells you
+which mode the screening ran in, what role each column was given, which
+rules caused some pairs to be skipped, and whether the C++ backend was
+used.
+
+## Adjust for a Confounder
+
+If you suspect one variable is confounding most of the others, you can
+partial it out before screening:
+
+```{r}
+fd_adj <- frame(df, adjustment = "elevation")
+relationships(fd_adj, kind = "meaningful")
+```
+
+## Tune the Strength Tiers
+
+Everything is configurable through `framedf_settings()` or the `...` of
+`frame()`:
+
+```{r, eval = FALSE}
+frame(df,
+      strong_threshold   = 0.6,
+      moderate_threshold = 0.4,
+      weak_threshold     = 0.15)
+```
+
+## Next Steps
+
+* [Workflows](workflows.html) — practical examples (large data, repeated
+  measures, observer effects).
+* [Roles and rules](roles.html) — what each role means and why some
+  columns are excluded from screening.
