@@ -1,0 +1,8 @@
+*.o
+*.so
+*.dll
+src/*.o
+src/RcppExports.cpp
+R/RcppExports.R
+*.Rproj.user
+tests/smoke.R
