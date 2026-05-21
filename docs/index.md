@@ -162,7 +162,7 @@ millions of rows.
 
 ``` r
 
-# install.packages("pak")
+install.packages("pak")
 pak::pak("gcol33/framedf")
 ```
 
