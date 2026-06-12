@@ -27,11 +27,21 @@ every column, screens all sensible pairs for relationships, and lists
 anomalies as qualitative sentences.
 ">
 </head>
-<body>pkgdown/mathjax-config.html
+<body>
+<p>
+
+
+
+
+
+
+
+
+  pkgdown/mathjax-config.html
 
   
 
-  
+  </p>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -83,26 +93,27 @@ anomalies as qualitative sentences.
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="framedf">framedf<a class="anchor" aria-label="anchor" href="#framedf"></a>
 </h1></div>
+<blockquote>
+<p>Small exact engines for scientific computing in R.</p>
+</blockquote>
+<p><em>a first look at someone else’s table</em></p>
 <p><a href="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p><strong>First-pass triage for unfamiliar data frames.</strong></p>
-<p>The <code>framedf</code> package gives you a one-line read on any data frame: it infers what each column means, screens every sensible pair for relationships, and flags the values worth checking before you model. The output is qualitative (direction, strength, stability), so you can skim it the way you would skim a colleague’s note.</p>
-<div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h2>
+<p><strong>First-pass triage of an unfamiliar data frame: column roles, pairwise relationships, and anomalies, read out in sentences.</strong></p>
+<p>Hand it a table. <code>framedf</code> infers what each column is (identifier, temporal, spatial, compositional, measurement), screens every sensible pair of columns for relationships, and flags the values worth checking before you model. Pair screening runs on C++ primitives (Rcpp): ordinary least squares for numeric pairs, QR residualisation when you adjust for a confounder, one-way ANOVA with eta-squared for group effects. <code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code> and <code>skimr</code> describe each column on its own; <code>framedf</code> reads the columns against each other and tells you what it found.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/framedf/">framedf</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">framedf</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>A typical run on a mid-size ecological table looks like:</p>
+<div class="section level2">
+<h2 id="what-a-run-reads-like">What a run reads like<a class="anchor" aria-label="anchor" href="#what-a-run-reads-like"></a>
+</h2>
 <pre><code>framedf
 
-5,000 rows × 19 columns
+5,000 rows x 19 columns
 
 Structure
 ────────────────
 Looks like a spatial repeated-measure observational dataframe.
-
-Detected observation unit:
-• plot observation
 
 Detected temporal structure:
 • sampling_year
@@ -111,36 +122,17 @@ Detected spatial structure:
 • longitude
 • latitude
 
-Likely identifiers:
-• PlotObservationID
-• PlotID
-• DatasetID
-• observer_id
-
-Possible grouping structure:
-• repeated observations within PlotID
-• observations grouped by country
-
-Possible compositional structure:
-• native_cover
-• alien_cover
-
 Relationships
 ────────────────
 temperature strongly decreases with elevation
 
 species_richness strongly increases with plot_area
 
-biomass strongly increases with species_richness
-
 longitude changes systematically with sampling_year
   possible spatial sampling drift
 
 the relationship between road_density and neophyte_richness weakens after accounting for country
   possible regional confounding
-
-DatasetID appears to structure both species_richness and biomass
-  possible dataset effect
 
 observer_id appears to structure both species_richness and biomass
   possible observer effect
@@ -149,116 +141,73 @@ native_cover and alien_cover behave as constrained complements
 
 Anomalies
 ────────────────
-species_richness, biomass, and zero_heavy_var contain extreme values relative to most observations
 zero_heavy_var shows a strongly skewed distribution
 
 Missingness
 ────────────────
-soil_pH is missing systematically in older observations
-
-Inflation and sparsity
-────────────────
-zero_heavy_var is strongly zero-inflated
-
-Ignored relationships
-────────────────
-PlotObservationID was ignored because it behaves like an identifier
-sampling_year was ignored because it is a temporal column, screened separately as drift</code></pre>
+soil_pH is missing systematically in older observations</code></pre>
+<p>The output is qualitative (direction, strength, stability), so you can skim it the way you would skim a colleague’s note on the data.</p>
 </div>
 <div class="section level2">
-<h2 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a>
+<h2 id="what-it-detects">What it detects<a class="anchor" aria-label="anchor" href="#what-it-detects"></a>
 </h2>
-<p>Every analysis starts with the same task: figure out what each column is, which pairs covary, and which values look wrong. <code>framedf</code> covers that first pass in one call, and returns findings in language you can read out loud.</p>
-<p>It is useful for:</p>
-<ul>
-<li>exploratory analysis on unfamiliar tabular data,</li>
-<li>pre-modelling sanity checks,</li>
-<li>spotting observer effects, drift, and compositional structure,</li>
-<li>documenting what you saw before you started fitting.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
-</h2>
-<div class="section level3">
-<h3 id="reader-functions">Reader functions<a class="anchor" aria-label="anchor" href="#reader-functions"></a>
-</h3>
-<ul>
-<li>
-<strong><code><a href="reference/frame.html">frame()</a></code></strong>: build a triage object from a data frame.</li>
-<li>
-<strong><code>print(frame(df))</code></strong>: narrative overview with <strong>Structure</strong>, <strong>Relationships</strong>, <strong>Anomalies</strong>, <strong>Missingness</strong>, <strong>Inflation and sparsity</strong>, and <strong>Ignored</strong> sections.</li>
-<li>
-<strong><code><a href="reference/relationships.html">relationships()</a></code></strong>: meaningful, suspicious, structural, and ignored pairs with direction, strength, and stability.</li>
-<li>
-<strong><code><a href="reference/anomalies.html">anomalies()</a></code></strong>: per-column oddities grouped by qualitative pattern.</li>
-<li>
-<strong><code><a href="reference/details.html">details()</a></code></strong>: analysis mode, column roles, skipped rules, and which backend ran.</li>
-<li>
-<strong><code><a href="reference/framedf_settings.html">framedf_settings()</a></code></strong>: every threshold is tunable.</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="what-gets-detected">What gets detected<a class="anchor" aria-label="anchor" href="#what-gets-detected"></a>
-</h3>
 <ul>
 <li>
 <strong>Roles</strong>: identifier, administrative index, grouping identifier, temporal, latitude, longitude, continuous measurement, compositional (cover, share, percent), categorical, logical flag, sparse binary, near-constant, constant.</li>
 <li>
-<strong>Structure</strong>: observation unit, temporal and spatial axes, identifiers, grouping membership, repeated measures, nested structure (A in B), compositional groups.</li>
+<strong>Structure</strong>: observation unit, temporal and spatial axes, repeated measures, nested structure (A within B), compositional groups.</li>
 <li>
-<strong>Relationships</strong>: linear association (with optional confounder adjustment), one-way ANOVA-style group effects, temporal and spatial drift, constrained-complement compositional pairs, confounded pairs (X and Y weaken after adjusting for Z), multi-target group effects (X structures both Y and Z), nonlinear pairs, categorical × categorical association.</li>
+<strong>Relationships</strong>: linear association (with optional confounder adjustment), one-way group effects, temporal and spatial drift, constrained-complement compositional pairs, confounded pairs (X and Y weaken after adjusting for Z), multi-target group effects (X structures both Y and Z), categorical pairs.</li>
 <li>
-<strong>Anomalies</strong>: Tukey-fence outliers, moment-based skew, implausible coordinate ranges, totals exceeding bounds, inconsistent capitalisation, very rare categorical levels, possible lat/lon swap, isolated temporal values.</li>
+<strong>Anomalies</strong>: Tukey-fence outliers, moment-based skew, implausible coordinate ranges, totals exceeding bounds, inconsistent capitalisation, rare categorical levels, possible latitude/longitude swap.</li>
 <li>
-<strong>Missingness</strong>: systematic over time, clustered by group, jointly missing across columns.</li>
-<li>
-<strong>Inflation and sparsity</strong>: zero-inflation, dominant extreme values, discretisation, singleton-heavy categoricals.</li>
+<strong>Missingness, inflation, sparsity</strong>: missing-over-time, missing-by-group, zero-inflation, dominant extreme values, singleton-heavy categoricals.</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
-</h3>
-<p>C++ primitives (Rcpp) handle inner loops. On data frames above <code>subsample_threshold</code> (default 50,000 rows), numeric pair screening uses two-stage progressive subsampling, which lets <code>framedf</code> scale to millions of rows.</p>
-</div>
+<div class="section level2">
+<h2 id="reader-functions">Reader functions<a class="anchor" aria-label="anchor" href="#reader-functions"></a>
+</h2>
+<ul>
+<li>
+<strong><code><a href="reference/frame.html">frame()</a></code></strong>: build a triage object from a data frame.</li>
+<li>
+<strong><code><a href="reference/relationships.html">relationships()</a></code></strong>: meaningful, suspicious, structural, and ignored pairs, with direction, strength, and stability.</li>
+<li>
+<strong><code><a href="reference/anomalies.html">anomalies()</a></code></strong>: per-column oddities, grouped by qualitative pattern.</li>
+<li>
+<strong><code><a href="reference/details.html">details()</a></code></strong>: screening mode, the role assigned to each column, the rules that skipped some pairs, and which backend ran.</li>
+<li>
+<strong><code><a href="reference/framedf_settings.html">framedf_settings()</a></code></strong>: every threshold is tunable.</li>
+</ul>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="adjust-for-a-confounder">Adjust for a confounder<a class="anchor" aria-label="anchor" href="#adjust-for-a-confounder"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pak</span><span class="op">(</span><span class="st">"gcol33/framedf"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a>
-</h2>
-<div class="section level3">
-<h3 id="adjust-for-a-confounder">Adjust for a confounder<a class="anchor" aria-label="anchor" href="#adjust-for-a-confounder"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>, adjustment <span class="op">=</span> <span class="st">"elevation"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span></span></code></pre></div>
-<p>With <code>adjustment</code> set, every numeric pair is screened on residualised values (QR-based partial-out), so confounded pairs no longer surface as meaningful.</p>
+<p>With <code>adjustment</code> set, every numeric pair is screened on residualised values (QR-based partial-out), so a pair driven by the confounder no longer surfaces as meaningful.</p>
 </div>
-<div class="section level3">
-<h3 id="tune-the-strength-thresholds">Tune the strength thresholds<a class="anchor" aria-label="anchor" href="#tune-the-strength-thresholds"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="section level2">
+<h2 id="tune-the-thresholds">Tune the thresholds<a class="anchor" aria-label="anchor" href="#tune-the-thresholds"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>,</span>
 <span>            strong_threshold   <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>            moderate_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>            weak_threshold     <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="inspect-everything">Inspect everything<a class="anchor" aria-label="anchor" href="#inspect-everything"></a>
-</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span>          <span class="co"># narrative overview</span></span>
-<span><span class="fu"><a href="reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span>  <span class="co"># ordered by kind</span></span>
-<span><span class="fu"><a href="reference/anomalies.html">anomalies</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span>      <span class="co"># ordered by pattern</span></span>
-<span><span class="fu"><a href="reference/details.html">details</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span>        <span class="co"># how the analysis was done</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
+</h2>
+<p>Above <code>subsample_threshold</code> (default 50,000 rows), numeric pair screening uses two-stage progressive subsampling: low-association pairs are dropped after a small probe sample, and the survivors are re-screened on a larger confirmation sample. The C++ primitives carry the inner loops, so screening stays usable into the millions of rows.</p>
 </div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/framedf"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -267,15 +216,14 @@ sampling_year was ignored because it is a temporal column, screened separately a
 <li><a href="https://gillescolling.com/framedf/articles/quickstart.html">Get Started</a></li>
 <li><a href="https://gillescolling.com/framedf/articles/workflows.html">Workflows</a></li>
 <li><a href="https://gillescolling.com/framedf/articles/roles.html">Roles and Rules</a></li>
-<li><a href="https://gillescolling.com/framedf/reference/">Full Reference</a></li>
+<li><a href="https://gillescolling.com/framedf/reference/">Reference</a></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
 </h2>
 <blockquote>
-<p>“Software is like sex: it’s better when it’s free.”</p>
-<p>Linus Torvalds</p>
+<p>“Software is like sex: it’s better when it’s free.” — Linus Torvalds</p>
 </blockquote>
 <p>I’m a PhD student who builds R packages in my free time because I believe good tools should be free and open. I started these projects for my own work and figured others might find them useful too.</p>
 <p>If this package saved you some time, buying me a coffee is a nice way to say thanks. It helps with my coffee addiction.</p>
@@ -289,12 +237,12 @@ sampling_year was ignored because it is a temporal column, screened separately a
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">@software{framedf,</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">  title  = {framedf: First-Pass Triage of Unfamiliar Data Frames},</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year   = {2026},</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">  url    = {https://github.com/gcol33/framedf}</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">@software{framedf,</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">  title  = {framedf: First-Pass Triage of Unfamiliar Data Frames},</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">  year   = {2026},</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">  url    = {https://github.com/gcol33/framedf}</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
