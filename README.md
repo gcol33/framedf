@@ -1,7 +1,5 @@
 # framedf
 
-> Small exact engines for scientific computing in R.
-
 *a first look at someone else's table*
 
 [![R-CMD-check](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml)
