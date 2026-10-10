@@ -19,6 +19,13 @@ knitr::opts_chunk$set(
 library(framedf)
 ```
 
+## Installation
+
+```{r, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
 ## What `framedf` Does
 
 `framedf` is a first-pass diagnostic for an unfamiliar data frame. It reads
@@ -40,13 +47,6 @@ There is one entry point, `frame()`, and four reader functions:
 * `anomalies(frame(df))`: per-column oddities.
 
 * `details(frame(df))`: methods, roles, skipped rules, backend.
-
-## Installation
-
-```{r, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/framedf")
-```
 
 ## A First Look
 

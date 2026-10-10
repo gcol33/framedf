@@ -15,6 +15,15 @@ pairs, QR residualisation when you adjust for a confounder, one-way ANOVA with
 eta-squared for group effects. `str()` and `skimr` describe each column on its
 own; `framedf` reads the columns against each other and tells you what it found.
 
+## Installation
+
+```r
+install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
+## Quick start
+
 ```r
 library(framedf)
 
@@ -122,13 +131,6 @@ two-stage progressive subsampling: low-association pairs are dropped after a
 small probe sample, and the survivors are re-screened on a larger confirmation
 sample. The C++ primitives carry the inner loops, so screening stays usable into
 the millions of rows.
-
-## Installation
-
-```r
-install.packages("pak")
-pak::pak("gcol33/framedf")
-```
 
 ## Documentation
 
