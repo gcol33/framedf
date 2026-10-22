@@ -1,5 +1,13 @@
 # Quick Start
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
 ## What `framedf` Does
 
 `framedf` is a first-pass diagnostic for an unfamiliar data frame. It
@@ -24,14 +32,6 @@ four reader functions:
 - `anomalies(frame(df))`: per-column oddities.
 
 - `details(frame(df))`: methods, roles, skipped rules, backend.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/framedf")
-```
 
 ## A First Look
 

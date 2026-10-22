@@ -6,6 +6,14 @@ over time, and a compositional pair that should not be modelled
 independently. In every case the goal is the same: read the data once
 before doing any modelling.
 
+## Installation
+
+``` r
+
+install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
 ## Workflow 1: An Observer Effect
 
 **Goal.** A dataset of plant richness measurements has multiple

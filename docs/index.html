@@ -94,131 +94,191 @@ anomalies as qualitative sentences.
 <div class="page-header"><h1 id="framedf">framedf<a class="anchor" aria-label="anchor" href="#framedf"></a>
 </h1></div>
 <p><em>a first look at someone else’s table</em></p>
-<p><a href="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p><strong>First-pass triage of an unfamiliar data frame: column roles, pairwise relationships, and anomalies, read out in sentences.</strong></p>
-<p>Hand it a table. <code>framedf</code> infers what each column is (identifier, temporal, spatial, compositional, measurement), screens every sensible pair of columns for relationships, and flags the values worth checking before you model. Pair screening runs on C++ primitives (Rcpp): ordinary least squares for numeric pairs, QR residualisation when you adjust for a confounder, one-way ANOVA with eta-squared for group effects. <code><a href="https://rdrr.io/r/utils/str.html" class="external-link">str()</a></code> and <code>skimr</code> describe each column on its own; <code>framedf</code> reads the columns against each other and tells you what it found.</p>
+<!-- badges: start -->
+
+<p>framedf gives a first reading of an unfamiliar data frame: what each column is, which pairs of columns move together, and which values look worth checking, written out as sentences.</p>
+<p>The package first assigns each column a role, such as identifier, temporal, spatial, compositional or measurement, and the roles decide which pairs of columns are screened and how. Pair screening runs on C++ primitives through <a href="https://www.rcpp.org/" class="external-link">Rcpp</a>: ordinary least squares for numeric pairs, QR residualisation when a confounder is adjusted for, and one-way ANOVA with eta-squared for group effects. The report states direction, strength and stability in words, so you can skim it before you decide what to model and which values to check.</p>
+<p>framedf supports:</p>
+<ul>
+<li>
+<strong>Column roles and structure.</strong> Columns are read as identifiers, administrative indices, grouping identifiers, temporal, latitude, longitude, continuous measurements, compositional (cover, share, percent), categorical, logical flags, sparse binary, near-constant or constant. From the roles, the package describes the observation unit, the temporal and spatial axes, repeated measures, nesting (A within B) and compositional groups (<a href="https://gillescolling.com/framedf/articles/roles.html">Roles and Rules</a>).</li>
+<li>
+<strong>Relationships between columns.</strong> The screen reports linear associations, one-way group effects, temporal and spatial drift, compositional pairs that are constrained complements, pairs that weaken after adjusting for a third column, a grouping column that structures several others, and associations between categorical columns.</li>
+<li>
+<strong>Anomalies.</strong> Checks include Tukey-fence outliers, moment-based skew, implausible coordinate ranges, totals exceeding their bounds, inconsistent capitalisation, rare categorical levels and a possible swap of latitude and longitude.</li>
+<li>
+<strong>Missingness and inflation.</strong> The report notes values missing over time or by group, zero inflation, dominant extreme values and categorical columns made mostly of singletons.</li>
+<li>
+<strong>Large tables.</strong> Above 50,000 rows (the default <code>subsample_threshold</code>), numeric pairs are screened in two stages: pairs with low association are dropped after a small probe sample, and the rest are screened again on a larger confirmation sample (<a href="https://gillescolling.com/framedf/articles/workflows.html">Workflows</a>).</li>
+</ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>The package compiles C++ code. Install the build tools for your operating system first:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Operating system</th>
+<th>Build tools</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>
+<a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>, the version that matches your R version</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>Run <code>xcode-select --install</code> in Terminal</td>
+</tr>
+<tr>
+<td>Debian / Ubuntu</td>
+<td>Install <code>r-base-dev</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Check that R can find the compiler:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">pkgbuild</span><span class="fu">::</span><span class="fu"><a href="https://pkgbuild.r-lib.org/reference/has_build_tools.html" class="external-link">has_build_tools</a></span><span class="op">(</span>debug <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Then install framedf:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/framedf"</span><span class="op">)</span></span></code></pre></div>
+<p>framedf needs no system libraries. Its only compiled dependency is Rcpp, which installs from CRAN with the package.</p>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<ol style="list-style-type: decimal">
+<li>Build the triage object with <code><a href="reference/frame.html">frame()</a></code>; printing it gives the overview.</li>
+<li>Read the screened pairs with <code><a href="reference/relationships.html">relationships()</a></code> and the per-column oddities with <code><a href="reference/anomalies.html">anomalies()</a></code>.</li>
+<li>When a finding surprises you, <code><a href="reference/details.html">details()</a></code> shows the screening mode, the role given to each column and the rules that skipped some pairs.</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/framedf/">framedf</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="what-a-run-reads-like">What a run reads like<a class="anchor" aria-label="anchor" href="#what-a-run-reads-like"></a>
-</h2>
-<pre><code>framedf
-
-5,000 rows x 19 columns
-
-Structure
-────────────────
-Looks like a spatial repeated-measure observational dataframe.
-
-Detected temporal structure:
-• sampling_year
-
-Detected spatial structure:
-• longitude
-• latitude
-
-Relationships
-────────────────
-temperature strongly decreases with elevation
-
-species_richness strongly increases with plot_area
-
-longitude changes systematically with sampling_year
-  possible spatial sampling drift
-
-the relationship between road_density and neophyte_richness weakens after accounting for country
-  possible regional confounding
-
-observer_id appears to structure both species_richness and biomass
-  possible observer effect
-
-native_cover and alien_cover behave as constrained complements
-
-Anomalies
-────────────────
-zero_heavy_var shows a strongly skewed distribution
-
-Missingness
-────────────────
-soil_pH is missing systematically in older observations</code></pre>
-<p>The output is qualitative (direction, strength, stability), so you can skim it the way you would skim a colleague’s note on the data.</p>
-</div>
-<div class="section level2">
-<h2 id="what-it-detects">What it detects<a class="anchor" aria-label="anchor" href="#what-it-detects"></a>
-</h2>
-<ul>
-<li>
-<strong>Roles</strong>: identifier, administrative index, grouping identifier, temporal, latitude, longitude, continuous measurement, compositional (cover, share, percent), categorical, logical flag, sparse binary, near-constant, constant.</li>
-<li>
-<strong>Structure</strong>: observation unit, temporal and spatial axes, repeated measures, nested structure (A within B), compositional groups.</li>
-<li>
-<strong>Relationships</strong>: linear association (with optional confounder adjustment), one-way group effects, temporal and spatial drift, constrained-complement compositional pairs, confounded pairs (X and Y weaken after adjusting for Z), multi-target group effects (X structures both Y and Z), categorical pairs.</li>
-<li>
-<strong>Anomalies</strong>: Tukey-fence outliers, moment-based skew, implausible coordinate ranges, totals exceeding bounds, inconsistent capitalisation, rare categorical levels, possible latitude/longitude swap.</li>
-<li>
-<strong>Missingness, inflation, sparsity</strong>: missing-over-time, missing-by-group, zero-inflation, dominant extreme values, singleton-heavy categoricals.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="reader-functions">Reader functions<a class="anchor" aria-label="anchor" href="#reader-functions"></a>
-</h2>
-<ul>
-<li>
-<strong><code><a href="reference/frame.html">frame()</a></code></strong>: build a triage object from a data frame.</li>
-<li>
-<strong><code><a href="reference/relationships.html">relationships()</a></code></strong>: meaningful, suspicious, structural, and ignored pairs, with direction, strength, and stability.</li>
-<li>
-<strong><code><a href="reference/anomalies.html">anomalies()</a></code></strong>: per-column oddities, grouped by qualitative pattern.</li>
-<li>
-<strong><code><a href="reference/details.html">details()</a></code></strong>: screening mode, the role assigned to each column, the rules that skipped some pairs, and which backend ran.</li>
-<li>
-<strong><code><a href="reference/framedf_settings.html">framedf_settings()</a></code></strong>: every threshold is tunable.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="adjust-for-a-confounder">Adjust for a confounder<a class="anchor" aria-label="anchor" href="#adjust-for-a-confounder"></a>
-</h2>
+<span><span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<span><span class="co">#&gt; framedf</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; 153 rows × 6 columns</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Structure</span></span>
+<span><span class="co">#&gt; ────────────────</span></span>
+<span><span class="co">#&gt; Looks like a flat cross-sectional dataframe.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Relationships</span></span>
+<span><span class="co">#&gt; ────────────────</span></span>
+<span><span class="co">#&gt; Solar.R increases with Ozone</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Wind strongly decreases with Ozone</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Temp strongly increases with Ozone</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Temp decreases with Wind</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Month increases with Temp</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Temp and Ozone follow a nonlinear relationship</span></span>
+<span><span class="co">#&gt;   possible saturation effect</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Anomalies</span></span>
+<span><span class="co">#&gt; ────────────────</span></span>
+<span><span class="co">#&gt; Ozone and Wind contain extreme values relative to most observations</span></span>
+<span><span class="co">#&gt; Ozone shows a strongly skewed distribution</span></span></code></pre></div>
+<p><code>airquality</code> ships with R: 153 daily measurements of ozone, solar radiation, wind and temperature in New York, May to September 1973. The input is any data frame. Each column’s role is inferred from the data, and <a href="https://gillescolling.com/framedf/articles/roles.html">Roles and Rules</a> explains each role and what to do when one is wrong.</p>
+<p><code><a href="reference/relationships.html">relationships()</a></code> groups the pairs as meaningful, suspicious, structural or ignored, each with its direction, strength and stability:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>, adjustment <span class="op">=</span> <span class="st">"elevation"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span></span></code></pre></div>
-<p>With <code>adjustment</code> set, every numeric pair is screened on residualised values (QR-based partial-out), so a pair driven by the confounder no longer surfaces as meaningful.</p>
+<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd</span>, kind <span class="op">=</span> <span class="st">"meaningful"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Relationships</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; meaningful</span></span>
+<span><span class="co">#&gt; ────────────────</span></span>
+<span><span class="co">#&gt; Solar.R ~ Ozone</span></span>
+<span><span class="co">#&gt;   direction: positive</span></span>
+<span><span class="co">#&gt;   strength: moderate</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Wind ~ Ozone</span></span>
+<span><span class="co">#&gt;   direction: negative</span></span>
+<span><span class="co">#&gt;   strength: strong</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Temp ~ Ozone</span></span>
+<span><span class="co">#&gt;   direction: positive</span></span>
+<span><span class="co">#&gt;   strength: strong</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Temp ~ Wind</span></span>
+<span><span class="co">#&gt;   direction: negative</span></span>
+<span><span class="co">#&gt;   strength: moderate</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Month ~ Temp</span></span>
+<span><span class="co">#&gt;   direction: positive</span></span>
+<span><span class="co">#&gt;   strength: moderate</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="tune-the-thresholds">Tune the thresholds<a class="anchor" aria-label="anchor" href="#tune-the-thresholds"></a>
+<h2 id="adjusting-for-a-confounder">Adjusting for a confounder<a class="anchor" aria-label="anchor" href="#adjusting-for-a-confounder"></a>
 </h2>
+<p>With <code>adjustment</code> set, every numeric pair is screened on values with the confounder partialled out (QR residualisation), so a pair driven by the confounder no longer appears as meaningful.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>,</span>
+<code class="sourceCode R"><span><span class="va">fd_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">airquality</span>, adjustment <span class="op">=</span> <span class="st">"Temp"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd_adj</span>, kind <span class="op">=</span> <span class="st">"meaningful"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Relationships</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; meaningful</span></span>
+<span><span class="co">#&gt; ────────────────</span></span>
+<span><span class="co">#&gt; Wind ~ Ozone</span></span>
+<span><span class="co">#&gt;   direction: negative</span></span>
+<span><span class="co">#&gt;   strength: moderate</span></span>
+<span><span class="co">#&gt;   stability: high</span></span>
+<span><span class="co">#&gt;   method: numeric screening (adjusted)</span></span></code></pre></div>
+<p>With temperature partialled out, the association of wind with ozone is the only meaningful pair left.</p>
+</div>
+<div class="section level2">
+<h2 id="tuning-the-thresholds">Tuning the thresholds<a class="anchor" aria-label="anchor" href="#tuning-the-thresholds"></a>
+</h2>
+<p><code><a href="reference/framedf_settings.html">framedf_settings()</a></code> lists every threshold, and each one can be passed to <code><a href="reference/frame.html">frame()</a></code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/frame.html">frame</a></span><span class="op">(</span><span class="va">airquality</span>,</span>
 <span>            strong_threshold   <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>            moderate_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>            weak_threshold     <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
-</h2>
-<p>Above <code>subsample_threshold</code> (default 50,000 rows), numeric pair screening uses two-stage progressive subsampling: low-association pairs are dropped after a small probe sample, and the survivors are re-screened on a larger confirmation sample. The C++ primitives carry the inner loops, so screening stays usable into the millions of rows.</p>
-</div>
-<div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
+<p>Start with <a href="https://gillescolling.com/framedf/articles/quickstart.html">Quick Start</a>: one data frame through <code><a href="reference/frame.html">frame()</a></code> and the reader functions.</p>
 <ul>
-<li><a href="https://gillescolling.com/framedf/articles/quickstart.html">Get Started</a></li>
-<li><a href="https://gillescolling.com/framedf/articles/workflows.html">Workflows</a></li>
-<li><a href="https://gillescolling.com/framedf/articles/roles.html">Roles and Rules</a></li>
-<li><a href="https://gillescolling.com/framedf/reference/">Reference</a></li>
+<li>
+<a href="https://gillescolling.com/framedf/articles/workflows.html">Workflows</a>: an observer effect, spatial sampling drift, a constrained complement and subsampling on large data.</li>
+<li>
+<a href="https://gillescolling.com/framedf/articles/roles.html">Roles and Rules</a>: what each role means and why some columns are left out of screening.</li>
+<li>
+<a href="https://gillescolling.com/framedf/reference/">Full reference</a>: every function.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+</h2>
+<p>Questions and bug reports go to the <a href="https://github.com/gcol33/framedf/issues" class="external-link">GitHub issues</a>. A bug report is easiest to act on with a small reproducible example, for instance made with <a href="https://reprex.tidyverse.org/" class="external-link">reprex</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Pull requests are welcome; see the <a href="https://gillescolling.com/framedf/CONTRIBUTING.html">contributing guide</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
@@ -233,17 +293,22 @@ soil_pH is missing systematically in older observations</code></pre>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT (see the LICENSE.md file)</p>
+<p>framedf is licensed under MIT.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">@software{framedf,</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">  title  = {framedf: First-Pass Triage of Unfamiliar Data Frames},</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">  year   = {2026},</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">  url    = {https://github.com/gcol33/framedf}</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<pre class="text"><code>Colling G (2026). _framedf: First-Pass Triage of Unfamiliar Data
+Frames_. R package version 0.1.0, &lt;https://gillescolling.com/framedf/&gt;.</code></pre>
+<p>BibTeX:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">colling2026framedf</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">title</span> = {framedf: First-Pass Triage of Unfamiliar Data Frames},</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="dt">author</span> = {Gilles Colling},</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="dt">year</span> = {2026},</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.1.0},</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://gillescolling.com/framedf/},</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>Download the citation as <a href="https://gillescolling.com/framedf/framedf.bib">BibTeX</a> or <a href="https://gillescolling.com/framedf/framedf.ris">RIS</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -285,7 +350,14 @@ soil_pH is missing systematically in older observations</code></pre>
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/gcol33/framedf" class="external-link"><img src="https://codecov.io/gh/gcol33/framedf/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

@@ -4,6 +4,14 @@
 infers. This vignette documents every role, the cues used to assign it,
 and the screening behaviour it triggers.
 
+## Installation
+
+``` r
+
+install.packages("pak")
+pak::pak("gcol33/framedf")
+```
+
 ## Why Roles Matter
 
 A correlation matrix treats `row_id` and `temperature` identically. They

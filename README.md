@@ -1,168 +1,276 @@
+
 # framedf
 
-*a first look at someone else's table*
+*a first look at someone else’s table*
+
+<!-- badges: start -->
 
 [![R-CMD-check](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/framedf/actions/workflows/R-CMD-check.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codecov test
+coverage](https://codecov.io/gh/gcol33/framedf/graph/badge.svg)](https://app.codecov.io/gh/gcol33/framedf)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
-**First-pass triage of an unfamiliar data frame: column roles, pairwise relationships, and anomalies, read out in sentences.**
+framedf gives a first reading of an unfamiliar data frame: what each
+column is, which pairs of columns move together, and which values look
+worth checking, written out as sentences.
 
-Hand it a table. `framedf` infers what each column is (identifier, temporal,
-spatial, compositional, measurement), screens every sensible pair of columns for
-relationships, and flags the values worth checking before you model. Pair
-screening runs on C++ primitives (Rcpp): ordinary least squares for numeric
-pairs, QR residualisation when you adjust for a confounder, one-way ANOVA with
-eta-squared for group effects. `str()` and `skimr` describe each column on its
-own; `framedf` reads the columns against each other and tells you what it found.
+The package first assigns each column a role, such as identifier,
+temporal, spatial, compositional or measurement, and the roles decide
+which pairs of columns are screened and how. Pair screening runs on C++
+primitives through [Rcpp](https://www.rcpp.org/): ordinary least squares
+for numeric pairs, QR residualisation when a confounder is adjusted for,
+and one-way ANOVA with eta-squared for group effects. The report states
+direction, strength and stability in words, so you can skim it before
+you decide what to model and which values to check.
+
+framedf supports:
+
+- **Column roles and structure.** Columns are read as identifiers,
+  administrative indices, grouping identifiers, temporal, latitude,
+  longitude, continuous measurements, compositional (cover, share,
+  percent), categorical, logical flags, sparse binary, near-constant or
+  constant. From the roles, the package describes the observation unit,
+  the temporal and spatial axes, repeated measures, nesting (A within B)
+  and compositional groups ([Roles and
+  Rules](https://gillescolling.com/framedf/articles/roles.html)).
+- **Relationships between columns.** The screen reports linear
+  associations, one-way group effects, temporal and spatial drift,
+  compositional pairs that are constrained complements, pairs that
+  weaken after adjusting for a third column, a grouping column that
+  structures several others, and associations between categorical
+  columns.
+- **Anomalies.** Checks include Tukey-fence outliers, moment-based skew,
+  implausible coordinate ranges, totals exceeding their bounds,
+  inconsistent capitalisation, rare categorical levels and a possible
+  swap of latitude and longitude.
+- **Missingness and inflation.** The report notes values missing over
+  time or by group, zero inflation, dominant extreme values and
+  categorical columns made mostly of singletons.
+- **Large tables.** Above 50,000 rows (the default
+  `subsample_threshold`), numeric pairs are screened in two stages:
+  pairs with low association are dropped after a small probe sample, and
+  the rest are screened again on a larger confirmation sample
+  ([Workflows](https://gillescolling.com/framedf/articles/workflows.html)).
 
 ## Installation
 
-```r
-install.packages("pak")
+The package compiles C++ code. Install the build tools for your
+operating system first:
+
+| Operating system | Build tools |
+|----|----|
+| Windows | [Rtools](https://cran.r-project.org/bin/windows/Rtools/), the version that matches your R version |
+| macOS | Run `xcode-select --install` in Terminal |
+| Debian / Ubuntu | Install `r-base-dev` |
+
+Check that R can find the compiler:
+
+``` r
+pkgbuild::has_build_tools(debug = TRUE)
+```
+
+Then install framedf:
+
+``` r
+# install.packages("pak")
 pak::pak("gcol33/framedf")
 ```
 
-## Quick start
+framedf needs no system libraries. Its only compiled dependency is Rcpp,
+which installs from CRAN with the package.
 
-```r
+## Usage
+
+1.  Build the triage object with `frame()`; printing it gives the
+    overview.
+2.  Read the screened pairs with `relationships()` and the per-column
+    oddities with `anomalies()`.
+3.  When a finding surprises you, `details()` shows the screening mode,
+    the role given to each column and the rules that skipped some pairs.
+
+``` r
 library(framedf)
 
-print(frame(my_data))
+frame(airquality)
+#> framedf
+#> 
+#> 153 rows × 6 columns
+#> 
+#> Structure
+#> ────────────────
+#> Looks like a flat cross-sectional dataframe.
+#> 
+#> 
+#> Relationships
+#> ────────────────
+#> Solar.R increases with Ozone
+#> 
+#> Wind strongly decreases with Ozone
+#> 
+#> Temp strongly increases with Ozone
+#> 
+#> Temp decreases with Wind
+#> 
+#> Month increases with Temp
+#> 
+#> Temp and Ozone follow a nonlinear relationship
+#>   possible saturation effect
+#> 
+#> Anomalies
+#> ────────────────
+#> Ozone and Wind contain extreme values relative to most observations
+#> Ozone shows a strongly skewed distribution
 ```
 
-## What a run reads like
+`airquality` ships with R: 153 daily measurements of ozone, solar
+radiation, wind and temperature in New York, May to September 1973. The
+input is any data frame. Each column’s role is inferred from the data,
+and [Roles and
+Rules](https://gillescolling.com/framedf/articles/roles.html) explains
+each role and what to do when one is wrong.
 
-```
-framedf
+`relationships()` groups the pairs as meaningful, suspicious, structural
+or ignored, each with its direction, strength and stability:
 
-5,000 rows x 19 columns
-
-Structure
-────────────────
-Looks like a spatial repeated-measure observational dataframe.
-
-Detected temporal structure:
-• sampling_year
-
-Detected spatial structure:
-• longitude
-• latitude
-
-Relationships
-────────────────
-temperature strongly decreases with elevation
-
-species_richness strongly increases with plot_area
-
-longitude changes systematically with sampling_year
-  possible spatial sampling drift
-
-the relationship between road_density and neophyte_richness weakens after accounting for country
-  possible regional confounding
-
-observer_id appears to structure both species_richness and biomass
-  possible observer effect
-
-native_cover and alien_cover behave as constrained complements
-
-Anomalies
-────────────────
-zero_heavy_var shows a strongly skewed distribution
-
-Missingness
-────────────────
-soil_pH is missing systematically in older observations
-```
-
-The output is qualitative (direction, strength, stability), so you can skim it
-the way you would skim a colleague's note on the data.
-
-## What it detects
-
-- **Roles**: identifier, administrative index, grouping identifier, temporal,
-  latitude, longitude, continuous measurement, compositional (cover, share,
-  percent), categorical, logical flag, sparse binary, near-constant, constant.
-- **Structure**: observation unit, temporal and spatial axes, repeated measures,
-  nested structure (A within B), compositional groups.
-- **Relationships**: linear association (with optional confounder adjustment),
-  one-way group effects, temporal and spatial drift, constrained-complement
-  compositional pairs, confounded pairs (X and Y weaken after adjusting for Z),
-  multi-target group effects (X structures both Y and Z), categorical pairs.
-- **Anomalies**: Tukey-fence outliers, moment-based skew, implausible coordinate
-  ranges, totals exceeding bounds, inconsistent capitalisation, rare categorical
-  levels, possible latitude/longitude swap.
-- **Missingness, inflation, sparsity**: missing-over-time, missing-by-group,
-  zero-inflation, dominant extreme values, singleton-heavy categoricals.
-
-## Reader functions
-
-- **`frame()`**: build a triage object from a data frame.
-- **`relationships()`**: meaningful, suspicious, structural, and ignored pairs,
-  with direction, strength, and stability.
-- **`anomalies()`**: per-column oddities, grouped by qualitative pattern.
-- **`details()`**: screening mode, the role assigned to each column, the rules
-  that skipped some pairs, and which backend ran.
-- **`framedf_settings()`**: every threshold is tunable.
-
-## Adjust for a confounder
-
-```r
-fd <- frame(df, adjustment = "elevation")
-relationships(fd)
+``` r
+fd <- frame(airquality)
+relationships(fd, kind = "meaningful")
+#> Relationships
+#> 
+#> meaningful
+#> ────────────────
+#> Solar.R ~ Ozone
+#>   direction: positive
+#>   strength: moderate
+#>   stability: high
+#>   method: numeric screening
+#> 
+#> Wind ~ Ozone
+#>   direction: negative
+#>   strength: strong
+#>   stability: high
+#>   method: numeric screening
+#> 
+#> Temp ~ Ozone
+#>   direction: positive
+#>   strength: strong
+#>   stability: high
+#>   method: numeric screening
+#> 
+#> Temp ~ Wind
+#>   direction: negative
+#>   strength: moderate
+#>   stability: high
+#>   method: numeric screening
+#> 
+#> Month ~ Temp
+#>   direction: positive
+#>   strength: moderate
+#>   stability: high
+#>   method: numeric screening
 ```
 
-With `adjustment` set, every numeric pair is screened on residualised values
-(QR-based partial-out), so a pair driven by the confounder no longer surfaces as
-meaningful.
+## Adjusting for a confounder
 
-## Tune the thresholds
+With `adjustment` set, every numeric pair is screened on values with the
+confounder partialled out (QR residualisation), so a pair driven by the
+confounder no longer appears as meaningful.
 
-```r
-fd <- frame(df,
+``` r
+fd_adj <- frame(airquality, adjustment = "Temp")
+relationships(fd_adj, kind = "meaningful")
+#> Relationships
+#> 
+#> meaningful
+#> ────────────────
+#> Wind ~ Ozone
+#>   direction: negative
+#>   strength: moderate
+#>   stability: high
+#>   method: numeric screening (adjusted)
+```
+
+With temperature partialled out, the association of wind with ozone is
+the only meaningful pair left.
+
+## Tuning the thresholds
+
+`framedf_settings()` lists every threshold, and each one can be passed
+to `frame()`:
+
+``` r
+fd <- frame(airquality,
             strong_threshold   = 0.6,
             moderate_threshold = 0.4,
             weak_threshold     = 0.15)
 ```
 
-## Scale
-
-Above `subsample_threshold` (default 50,000 rows), numeric pair screening uses
-two-stage progressive subsampling: low-association pairs are dropped after a
-small probe sample, and the survivors are re-screened on a larger confirmation
-sample. The C++ primitives carry the inner loops, so screening stays usable into
-the millions of rows.
-
 ## Documentation
 
-- [Get Started](https://gillescolling.com/framedf/articles/quickstart.html)
-- [Workflows](https://gillescolling.com/framedf/articles/workflows.html)
-- [Roles and Rules](https://gillescolling.com/framedf/articles/roles.html)
-- [Reference](https://gillescolling.com/framedf/reference/)
+Start with [Quick
+Start](https://gillescolling.com/framedf/articles/quickstart.html): one
+data frame through `frame()` and the reader functions.
+
+- [Workflows](https://gillescolling.com/framedf/articles/workflows.html):
+  an observer effect, spatial sampling drift, a constrained complement
+  and subsampling on large data.
+- [Roles and
+  Rules](https://gillescolling.com/framedf/articles/roles.html): what
+  each role means and why some columns are left out of screening.
+- [Full reference](https://gillescolling.com/framedf/reference/): every
+  function.
+
+## Getting help
+
+Questions and bug reports go to the [GitHub
+issues](https://github.com/gcol33/framedf/issues). A bug report is
+easiest to act on with a small reproducible example, for instance made
+with [reprex](https://reprex.tidyverse.org/).
+
+## Contributing
+
+Pull requests are welcome; see the [contributing
+guide](https://gillescolling.com/framedf/CONTRIBUTING.html).
 
 ## Support
 
-> "Software is like sex: it's better when it's free." — Linus Torvalds
+> “Software is like sex: it’s better when it’s free.” — Linus Torvalds
 
-I'm a PhD student who builds R packages in my free time because I believe good
-tools should be free and open. I started these projects for my own work and
-figured others might find them useful too.
+I’m a PhD student who builds R packages in my free time because I
+believe good tools should be free and open. I started these projects for
+my own work and figured others might find them useful too.
 
-If this package saved you some time, buying me a coffee is a nice way to say
-thanks. It helps with my coffee addiction.
+If this package saved you some time, buying me a coffee is a nice way to
+say thanks. It helps with my coffee addiction.
 
-[![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
+[![Buy Me A
+Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
 
 ## License
 
-MIT (see the LICENSE.md file)
+framedf is licensed under MIT.
 
 ## Citation
 
-```bibtex
-@software{framedf,
-  author = {Colling, Gilles},
-  title  = {framedf: First-Pass Triage of Unfamiliar Data Frames},
-  year   = {2026},
-  url    = {https://github.com/gcol33/framedf}
+``` text
+Colling G (2026). _framedf: First-Pass Triage of Unfamiliar Data
+Frames_. R package version 0.1.0, <https://gillescolling.com/framedf/>.
+```
+
+BibTeX:
+
+``` bibtex
+@Manual{colling2026framedf,
+  title = {framedf: First-Pass Triage of Unfamiliar Data Frames},
+  author = {Gilles Colling},
+  year = {2026},
+  note = {R package version 0.1.0},
+  url = {https://gillescolling.com/framedf/},
 }
 ```
+
+Download the citation as
+[BibTeX](https://gillescolling.com/framedf/framedf.bib) or
+[RIS](https://gillescolling.com/framedf/framedf.ris).

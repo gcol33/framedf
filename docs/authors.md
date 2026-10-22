@@ -11,12 +11,12 @@ Source:
 [`inst/CITATION`](https://github.com/gcol33/framedf/blob/HEAD/inst/CITATION)
 
 Colling G (2026). *framedf: First-Pass Triage of Unfamiliar Data
-Frames*. R package version 0.1.0, <https://github.com/gcol33/framedf>.
+Frames*. R package version 0.1.0, <https://gillescolling.com/framedf/>.
 
-    @Manual{,
+    @Manual{colling2026framedf,
       title = {framedf: First-Pass Triage of Unfamiliar Data Frames},
       author = {Gilles Colling},
       year = {2026},
       note = {R package version 0.1.0},
-      url = {https://github.com/gcol33/framedf},
+      url = {https://gillescolling.com/framedf/},
     }
