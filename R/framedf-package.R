@@ -8,7 +8,7 @@
 #'
 #' @section Entry points:
 #' \describe{
-#'   \item{[frame()]}{build a triage object from a data frame.}
+#'   \item{[triage()]}{build a triage object from a data frame.}
 #'   \item{[print.frame_df()]}{narrative overview.}
 #'   \item{[relationships()]}{meaningful, suspicious, structural, ignored pairs.}
 #'   \item{[anomalies()]}{per-column oddities.}

@@ -3,7 +3,7 @@
 \name{relationships}
 \alias{relationships}
 \alias{relationships.frame_df}
-\title{Show Relationships Found by \code{frame()}}
+\title{Show Relationships Found by \code{triage()}}
 \usage{
 relationships(x, ...)
 
@@ -40,5 +40,5 @@ df <- data.frame(
   y = rnorm(100)
 )
 df$z <- 0.8 * df$x + 0.2 * stats::rnorm(100)
-relationships(frame(df))
+relationships(triage(df))
 }

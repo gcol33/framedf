@@ -16,7 +16,7 @@ df <- data.frame(
   stringsAsFactors  = FALSE
 )
 
-fd <- frame(df)
+fd <- triage(df)
 print(fd)
 
 cat("\n--- relationships() ---\n")

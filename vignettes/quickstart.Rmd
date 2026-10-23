@@ -38,15 +38,15 @@ strongly with elevation"*. Numeric evidence (Pearson coefficients,
 F-statistics, p-values) is still on the object for anyone who wants it;
 the printed view stays skimmable.
 
-There is one entry point, `frame()`, and four reader functions:
+There is one entry point, `triage()`, and four reader functions:
 
-* `print(frame(df))`: narrative overview.
+* `print(triage(df))`: narrative overview.
 
-* `relationships(frame(df))`: pairs grouped as meaningful, suspicious,
+* `relationships(triage(df))`: pairs grouped as meaningful, suspicious,
   structural, or ignored.
-* `anomalies(frame(df))`: per-column oddities.
+* `anomalies(triage(df))`: per-column oddities.
 
-* `details(frame(df))`: methods, roles, skipped rules, backend.
+* `details(triage(df))`: methods, roles, skipped rules, backend.
 
 ## A First Look
 
@@ -72,7 +72,7 @@ df$cover_b     <- 1 - df$cover_a
 ```
 
 ```{r}
-fd <- frame(df)
+fd <- triage(df)
 print(fd)
 ```
 
@@ -112,17 +112,17 @@ If you suspect one variable is confounding most of the others, you can
 partial it out before screening:
 
 ```{r}
-fd_adj <- frame(df, adjustment = "elevation")
+fd_adj <- triage(df, adjustment = "elevation")
 relationships(fd_adj, kind = "meaningful")
 ```
 
 ## Tune the Strength Tiers
 
 Everything is configurable through `framedf_settings()` or the `...` of
-`frame()`:
+`triage()`:
 
 ```{r, eval = FALSE}
-frame(df,
+triage(df,
       strong_threshold   = 0.6,
       moderate_threshold = 0.4,
       weak_threshold     = 0.15)

@@ -2,7 +2,7 @@ test_that("a strong linear pair is flagged as meaningful and strong", {
   set.seed(1)
   x <- stats::rnorm(200)
   df <- data.frame(x = x, y = 0.9 * x + stats::rnorm(200, sd = 0.3))
-  fd <- frame(df)
+  fd <- triage(df)
   meas <- Filter(function(f) f$type == "numeric_numeric",
                  fd$relationship_findings)
   expect_length(meas, 1L)
@@ -16,7 +16,7 @@ test_that("a categorical with id-like name and strong group effect is suspicious
   effect <- stats::setNames(stats::rnorm(8, 0, 5), letters[1:8])
   y <- effect[obs] + stats::rnorm(400)
   df <- data.frame(observer_id = obs, y = as.numeric(y))
-  fd <- frame(df)
+  fd <- triage(df)
   cat_findings <- Filter(function(f) f$type == "categorical_numeric",
                          fd$relationship_findings)
   expect_true(length(cat_findings) >= 1L)
@@ -30,7 +30,7 @@ test_that("temporal × spatial drift fires when present", {
   df <- data.frame(year = yr,
                    longitude = 10 + (yr - 2010) * 0.3 + stats::rnorm(500, sd = 0.1),
                    y = stats::rnorm(500))
-  fd <- frame(df)
+  fd <- triage(df)
   drift <- Filter(function(f) f$type == "drift", fd$relationship_findings)
   expect_true(length(drift) >= 1L)
   expect_true(drift[[1]]$kind %in% c("suspicious", "negligible"))
@@ -40,7 +40,7 @@ test_that("constrained complement pairs are flagged as structural", {
   set.seed(1)
   a <- stats::runif(200, 0, 1)
   df <- data.frame(native_cover = a, alien_cover = 1 - a)
-  fd <- frame(df)
+  fd <- triage(df)
   comp <- Filter(function(f) f$type == "compositional",
                  fd$relationship_findings)
   expect_length(comp, 1L)
@@ -49,7 +49,7 @@ test_that("constrained complement pairs are flagged as structural", {
 
 test_that("ignored columns are excluded from the numeric pair sweep", {
   df <- data.frame(plot_id = 1:50, x = stats::rnorm(50), y = stats::rnorm(50))
-  fd <- frame(df)
+  fd <- triage(df)
   expect_true("plot_id" %in% fd$ignored_cols)
   pair_x <- vapply(fd$relationship_findings, `[[`, character(1L), "x")
   pair_y <- vapply(fd$relationship_findings, `[[`, character(1L), "y")
@@ -64,8 +64,8 @@ test_that("adjustment shrinks an apparent correlation through a confounder", {
     y = z + stats::rnorm(200, sd = 1.5),
     z = z
   )
-  raw <- frame(df)
-  adj <- frame(df, adjustment = "z")
+  raw <- triage(df)
+  adj <- triage(df, adjustment = "z")
 
   raw_finding <- raw$relationship_findings[[
     which(vapply(raw$relationship_findings,

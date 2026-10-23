@@ -83,7 +83,7 @@ which installs from CRAN with the package.
 
 ## Usage
 
-1.  Build the triage object with `frame()`; printing it gives the
+1.  Call `triage()` on the data frame; printing the result gives the
     overview.
 2.  Read the screened pairs with `relationships()` and the per-column
     oddities with `anomalies()`.
@@ -93,7 +93,7 @@ which installs from CRAN with the package.
 ``` r
 library(framedf)
 
-frame(airquality)
+triage(airquality)
 #> framedf
 #> 
 #> 153 rows × 6 columns
@@ -135,7 +135,7 @@ each role and what to do when one is wrong.
 or ignored, each with its direction, strength and stability:
 
 ``` r
-fd <- frame(airquality)
+fd <- triage(airquality)
 relationships(fd, kind = "meaningful")
 #> Relationships
 #> 
@@ -179,7 +179,7 @@ confounder partialled out (QR residualisation), so a pair driven by the
 confounder no longer appears as meaningful.
 
 ``` r
-fd_adj <- frame(airquality, adjustment = "Temp")
+fd_adj <- triage(airquality, adjustment = "Temp")
 relationships(fd_adj, kind = "meaningful")
 #> Relationships
 #> 
@@ -198,10 +198,10 @@ the only meaningful pair left.
 ## Tuning the thresholds
 
 `framedf_settings()` lists every threshold, and each one can be passed
-to `frame()`:
+to `triage()`:
 
 ``` r
-fd <- frame(airquality,
+fd <- triage(airquality,
             strong_threshold   = 0.6,
             moderate_threshold = 0.4,
             weak_threshold     = 0.15)
@@ -211,7 +211,7 @@ fd <- frame(airquality,
 
 Start with [Quick
 Start](https://gillescolling.com/framedf/articles/quickstart.html): one
-data frame through `frame()` and the reader functions.
+data frame through `triage()` and the reader functions.
 
 - [Workflows](https://gillescolling.com/framedf/articles/workflows.html):
   an observer effect, spatial sampling drift, a constrained complement

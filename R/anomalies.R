@@ -1,4 +1,4 @@
-#' Show Anomaly Findings from `frame()`
+#' Show Anomaly Findings from `triage()`
 #'
 #' Lists per-column anomalies grouped by qualitative pattern: implausible
 #' values, totals exceeding bounds, capitalization inconsistency, rare
@@ -17,7 +17,7 @@
 #'   y = c(rnorm(98), 100, -100),
 #'   g = c(rep("A", 49), rep("a", 49), "B", "B")
 #' )
-#' anomalies(frame(df))
+#' anomalies(triage(df))
 #' @export
 anomalies <- function(x, ...) UseMethod("anomalies")
 

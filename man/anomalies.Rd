@@ -3,7 +3,7 @@
 \name{anomalies}
 \alias{anomalies}
 \alias{anomalies.frame_df}
-\title{Show Anomaly Findings from \code{frame()}}
+\title{Show Anomaly Findings from \code{triage()}}
 \usage{
 anomalies(x, ...)
 
@@ -32,5 +32,5 @@ df <- data.frame(
   y = c(rnorm(98), 100, -100),
   g = c(rep("A", 49), rep("a", 49), "B", "B")
 )
-anomalies(frame(df))
+anomalies(triage(df))
 }

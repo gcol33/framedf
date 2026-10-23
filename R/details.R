@@ -1,6 +1,6 @@
 #' Show Methods, Roles, and Skipped Rules
 #'
-#' `details()` prints how `frame()` did its work: the screening mode it
+#' `details()` prints how `triage()` did its work: the screening mode it
 #' chose, the role assigned to each column, the rules that caused some
 #' pairs to be skipped, and which backend was used.
 #'
@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' df <- data.frame(x = 1:30, y = rnorm(30))
-#' details(frame(df))
+#' details(triage(df))
 #' @export
 details <- function(x, ...) UseMethod("details")
 

@@ -1,6 +1,6 @@
 # Triage a Data Frame for Structure, Relationships, and Anomalies
 
-`frame()` reads a data frame, infers a semantic role for each column
+`triage()` reads a data frame, infers a semantic role for each column
 (identifier, temporal, spatial, categorical, continuous, ...), screens
 all sensible pairs of columns for relationships, and surfaces a small
 set of anomalies in a single pass. The result is a qualitative summary
@@ -10,7 +10,7 @@ dataset.
 ## Usage
 
 ``` r
-frame(data, adjustment = NULL, ...)
+triage(data, adjustment = NULL, ...)
 ```
 
 ## Arguments
@@ -42,7 +42,7 @@ settings used.
 Reader functions consume the result:
 
 - [`print.frame_df()`](https://gillescolling.com/framedf/reference/print.frame_df.md):
-  narrative overview (the default `print(frame(df))`)
+  narrative overview (the default `print(triage(df))`)
 
 - [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md):
   meaningful, suspicious, structural, and ignored pairs
@@ -69,6 +69,6 @@ df <- data.frame(
   stringsAsFactors = FALSE
 )
 df$temperature <- 20 - df$elevation / 200 + stats::rnorm(n)
-fd <- frame(df)
+fd <- triage(df)
 print(fd)
 ```

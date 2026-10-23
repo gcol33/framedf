@@ -15,7 +15,7 @@ stability, expressed as sentences.
 \section{Entry points}{
 
 \describe{
-\item{\code{\link[=frame]{frame()}}}{build a triage object from a data frame.}
+\item{\code{\link[=triage]{triage()}}}{build a triage object from a data frame.}
 \item{\code{\link[=print.frame_df]{print.frame_df()}}}{narrative overview.}
 \item{\code{\link[=relationships]{relationships()}}}{meaningful, suspicious, structural, ignored pairs.}
 \item{\code{\link[=anomalies]{anomalies()}}}{per-column oddities.}
@@ -35,6 +35,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Gilles Colling \email{gilles.colling051@gmail.com} (\href{https://orcid.org/0000-0003-3070-6066}{ORCID}) [copyright holder]
+
+Authors:
+\itemize{
+  \item Gilles Colling \email{gilles.colling051@gmail.com} (\href{https://orcid.org/0000-0003-3070-6066}{ORCID}) [copyright holder]
+}
 
 }
 \keyword{internal}

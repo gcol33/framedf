@@ -56,14 +56,14 @@ framedf needs no system libraries. Its only compiled dependency is Rcpp, which i
 
 ## Usage
 
-1. Build the triage object with `frame()`; printing it gives the overview.
+1. Call `triage()` on the data frame; printing the result gives the overview.
 2. Read the screened pairs with `relationships()` and the per-column oddities with `anomalies()`.
 3. When a finding surprises you, `details()` shows the screening mode, the role given to each column and the rules that skipped some pairs.
 
-```{r frame, message = FALSE}
+```{r triage, message = FALSE}
 library(framedf)
 
-frame(airquality)
+triage(airquality)
 ```
 
 `airquality` ships with R: 153 daily measurements of ozone, solar radiation, wind and temperature in New York, May to September 1973. The input is any data frame. Each column's role is inferred from the data, and [Roles and Rules](https://gillescolling.com/framedf/articles/roles.html) explains each role and what to do when one is wrong.
@@ -71,7 +71,7 @@ frame(airquality)
 `relationships()` groups the pairs as meaningful, suspicious, structural or ignored, each with its direction, strength and stability:
 
 ```{r relationships}
-fd <- frame(airquality)
+fd <- triage(airquality)
 relationships(fd, kind = "meaningful")
 ```
 
@@ -80,7 +80,7 @@ relationships(fd, kind = "meaningful")
 With `adjustment` set, every numeric pair is screened on values with the confounder partialled out (QR residualisation), so a pair driven by the confounder no longer appears as meaningful.
 
 ```{r adjust}
-fd_adj <- frame(airquality, adjustment = "Temp")
+fd_adj <- triage(airquality, adjustment = "Temp")
 relationships(fd_adj, kind = "meaningful")
 ```
 
@@ -88,10 +88,10 @@ With temperature partialled out, the association of wind with ozone is the only 
 
 ## Tuning the thresholds
 
-`framedf_settings()` lists every threshold, and each one can be passed to `frame()`:
+`framedf_settings()` lists every threshold, and each one can be passed to `triage()`:
 
 ```r
-fd <- frame(airquality,
+fd <- triage(airquality,
             strong_threshold   = 0.6,
             moderate_threshold = 0.4,
             weak_threshold     = 0.15)
@@ -99,7 +99,7 @@ fd <- frame(airquality,
 
 ## Documentation
 
-Start with [Quick Start](https://gillescolling.com/framedf/articles/quickstart.html): one data frame through `frame()` and the reader functions.
+Start with [Quick Start](https://gillescolling.com/framedf/articles/quickstart.html): one data frame through `triage()` and the reader functions.
 
 - [Workflows](https://gillescolling.com/framedf/articles/workflows.html): an observer effect, spatial sampling drift, a constrained complement and subsampling on large data.
 - [Roles and Rules](https://gillescolling.com/framedf/articles/roles.html): what each role means and why some columns are left out of screening.

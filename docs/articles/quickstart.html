@@ -118,14 +118,14 @@ move together, and by flagging values that look wrong.</p>
 decreases strongly with elevation”</em>. Numeric evidence (Pearson
 coefficients, F-statistics, p-values) is still on the object for anyone
 who wants it; the printed view stays skimmable.</p>
-<p>There is one entry point, <code><a href="../reference/frame.html">frame()</a></code>, and four reader
+<p>There is one entry point, <code><a href="../reference/triage.html">triage()</a></code>, and four reader
 functions:</p>
 <ul>
-<li><p><code>print(frame(df))</code>: narrative overview.</p></li>
-<li><p><code>relationships(frame(df))</code>: pairs grouped as
+<li><p><code>print(triage(df))</code>: narrative overview.</p></li>
+<li><p><code>relationships(triage(df))</code>: pairs grouped as
 meaningful, suspicious, structural, or ignored.</p></li>
-<li><p><code>anomalies(frame(df))</code>: per-column oddities.</p></li>
-<li><p><code>details(frame(df))</code>: methods, roles, skipped rules,
+<li><p><code>anomalies(triage(df))</code>: per-column oddities.</p></li>
+<li><p><code>details(triage(df))</code>: methods, roles, skipped rules,
 backend.</p></li>
 </ul>
 </div>
@@ -152,7 +152,7 @@ backend.</p></li>
 <span>                  <span class="fl">2</span> <span class="op">*</span> <span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">observer</span> <span class="op">==</span> <span class="st">"a"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
 <span><span class="va">df</span><span class="op">$</span><span class="va">cover_b</span>     <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">df</span><span class="op">$</span><span class="va">cover_a</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; framedf</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -328,7 +328,7 @@ C++ backend was used.</p>
 <p>If you suspect one variable is confounding most of the others, you
 can partial it out before screening:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>, adjustment <span class="op">=</span> <span class="st">"elevation"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fd_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df</span>, adjustment <span class="op">=</span> <span class="st">"elevation"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd_adj</span>, kind <span class="op">=</span> <span class="st">"meaningful"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Relationships</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -350,9 +350,9 @@ can partial it out before screening:</p>
 <h2 id="tune-the-strength-tiers">Tune the Strength Tiers<a class="anchor" aria-label="anchor" href="#tune-the-strength-tiers"></a>
 </h2>
 <p>Everything is configurable through <code><a href="../reference/framedf_settings.html">framedf_settings()</a></code> or
-the <code>...</code> of <code><a href="../reference/frame.html">frame()</a></code>:</p>
+the <code>...</code> of <code><a href="../reference/triage.html">triage()</a></code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df</span>,</span>
 <span>      strong_threshold   <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>      moderate_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>      weak_threshold     <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></code></pre></div>

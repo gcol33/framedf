@@ -1,3 +1,8 @@
+# framedf (development version)
+
+* `frame()` is renamed `triage()`, so attaching framedf no longer masks
+  `graphics::frame()`.
+
 # framedf 0.1.0
 
 Initial public release.

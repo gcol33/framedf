@@ -65,10 +65,10 @@ reference:
 - title: Triage
   desc: Build a triage object from a data frame.
   contents:
-  - frame
+  - triage
   - framedf_settings
 - title: Reader functions
-  desc: Inspect what `frame()` found.
+  desc: Inspect what `triage()` found.
   contents:
   - print.frame_df
   - relationships

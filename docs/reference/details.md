@@ -1,7 +1,7 @@
 # Show Methods, Roles, and Skipped Rules
 
 `details()` prints how
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md) did
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md) did
 its work: the screening mode it chose, the role assigned to each column,
 the rules that caused some pairs to be skipped, and which backend was
 used.
@@ -42,5 +42,5 @@ screened.
 
 ``` r
 df <- data.frame(x = 1:30, y = rnorm(30))
-details(frame(df))
+details(triage(df))
 ```

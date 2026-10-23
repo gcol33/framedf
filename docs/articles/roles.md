@@ -60,7 +60,7 @@ df <- data.frame(
   stringsAsFactors  = FALSE
 )
 df$alien_cover <- 1 - df$native_cover
-fd <- frame(df)
+fd <- triage(df)
 details(fd)
 #> Details
 #> 
@@ -113,7 +113,7 @@ Every threshold is a parameter:
 
 ``` r
 
-frame(df,
+triage(df,
       id_unique_ratio     = 0.99,   # require 99% unique to call a string an id
       near_constant_ratio = 0.01,   # call near-constant if dominant > 99%
       strong_threshold    = 0.6,
@@ -138,7 +138,7 @@ bucket sometimes. Two ways to recover:
 
 ``` r
 
-fd <- frame(df)
+fd <- triage(df)
 fd$roles[["my_weird_column"]] <- "measurement"
 # (re-run any reader you need on the modified object)
 ```

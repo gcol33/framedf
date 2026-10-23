@@ -21,17 +21,17 @@ coefficients, F-statistics, p-values) is still on the object for anyone
 who wants it; the printed view stays skimmable.
 
 There is one entry point,
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md), and
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md), and
 four reader functions:
 
-- `print(frame(df))`: narrative overview.
+- `print(triage(df))`: narrative overview.
 
-- `relationships(frame(df))`: pairs grouped as meaningful, suspicious,
+- `relationships(triage(df))`: pairs grouped as meaningful, suspicious,
   structural, or ignored.
 
-- `anomalies(frame(df))`: per-column oddities.
+- `anomalies(triage(df))`: per-column oddities.
 
-- `details(frame(df))`: methods, roles, skipped rules, backend.
+- `details(triage(df))`: methods, roles, skipped rules, backend.
 
 ## A First Look
 
@@ -59,7 +59,7 @@ df$cover_b     <- 1 - df$cover_a
 
 ``` r
 
-fd <- frame(df)
+fd <- triage(df)
 print(fd)
 #> framedf
 #> 
@@ -246,7 +246,7 @@ partial it out before screening:
 
 ``` r
 
-fd_adj <- frame(df, adjustment = "elevation")
+fd_adj <- triage(df, adjustment = "elevation")
 relationships(fd_adj, kind = "meaningful")
 #> Relationships
 #> 
@@ -270,11 +270,11 @@ relationships(fd_adj, kind = "meaningful")
 Everything is configurable through
 [`framedf_settings()`](https://gillescolling.com/framedf/reference/framedf_settings.md)
 or the `...` of
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md):
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md):
 
 ``` r
 
-frame(df,
+triage(df,
       strong_threshold   = 0.6,
       moderate_threshold = 0.4,
       weak_threshold     = 0.15)

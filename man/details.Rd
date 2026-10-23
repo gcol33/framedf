@@ -18,7 +18,7 @@ details(x, ...)
 The input invisibly.
 }
 \description{
-\code{details()} prints how \code{frame()} did its work: the screening mode it
+\code{details()} prints how \code{triage()} did its work: the screening mode it
 chose, the role assigned to each column, the rules that caused some
 pairs to be skipped, and which backend was used.
 }
@@ -29,5 +29,5 @@ pair was or was not screened.
 }
 \examples{
 df <- data.frame(x = 1:30, y = rnorm(30))
-details(frame(df))
+details(triage(df))
 }

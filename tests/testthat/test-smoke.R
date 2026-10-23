@@ -25,7 +25,7 @@ test_that("a realistic mixed data frame produces all output sections", {
                     2 * (df$observer_id == "a") + stats::rnorm(n)
   df$alien_cover <- 1 - df$native_cover
 
-  fd <- frame(df)
+  fd <- triage(df)
   expect_s3_class(fd, "frame_df")
 
   expect_output(print(fd), "framedf")

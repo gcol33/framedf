@@ -1,4 +1,4 @@
-#' Show Relationships Found by `frame()`
+#' Show Relationships Found by `triage()`
 #'
 #' Prints a structured listing of all relationship findings, grouped into
 #' four kinds: meaningful, suspicious, structural, and ignored. Each pair
@@ -19,7 +19,7 @@
 #'   y = rnorm(100)
 #' )
 #' df$z <- 0.8 * df$x + 0.2 * stats::rnorm(100)
-#' relationships(frame(df))
+#' relationships(triage(df))
 #' @export
 relationships <- function(x, ...) UseMethod("relationships")
 

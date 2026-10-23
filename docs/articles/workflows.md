@@ -47,7 +47,7 @@ df$richness <- 10 + 0.3 * sqrt(df$plot_area) + bias[df$observer_id] +
 
 ``` r
 
-fd <- frame(df)
+fd <- triage(df)
 relationships(fd, kind = "suspicious")
 #> Relationships
 #> 
@@ -98,7 +98,7 @@ df_drift <- data.frame(
   longitude = 10 + (yr - 2010) * 0.3 + stats::rnorm(500, sd = 0.1),
   richness  = stats::rnorm(500, 30)
 )
-fd_drift <- frame(df_drift)
+fd_drift <- triage(df_drift)
 relationships(fd_drift, kind = "suspicious")
 #> Relationships
 #> 
@@ -141,7 +141,7 @@ df_comp <- data.frame(
 )
 df_comp$alien_cover  <- 1 - df_comp$native_cover
 df_comp$temperature  <- 20 - 0.01 * df_comp$richness + stats::rnorm(n)
-fd_comp <- frame(df_comp)
+fd_comp <- triage(df_comp)
 relationships(fd_comp)
 #> Relationships
 #> 
@@ -181,7 +181,7 @@ disagree, `low` if the probe alone was carried.
 
 ``` r
 
-fd_big <- frame(big_df)
+fd_big <- triage(big_df)
 details(fd_big)
 ```
 

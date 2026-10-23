@@ -75,9 +75,9 @@ which installs from CRAN with the package.
 
 ## Usage
 
-1.  Build the triage object with
-    [`frame()`](https://gillescolling.com/framedf/reference/frame.md);
-    printing it gives the overview.
+1.  Call
+    [`triage()`](https://gillescolling.com/framedf/reference/triage.md)
+    on the data frame; printing the result gives the overview.
 2.  Read the screened pairs with
     [`relationships()`](https://gillescolling.com/framedf/reference/relationships.md)
     and the per-column oddities with
@@ -91,7 +91,7 @@ which installs from CRAN with the package.
 
 library(framedf)
 
-frame(airquality)
+triage(airquality)
 #> framedf
 #> 
 #> 153 rows × 6 columns
@@ -135,7 +135,7 @@ with its direction, strength and stability:
 
 ``` r
 
-fd <- frame(airquality)
+fd <- triage(airquality)
 relationships(fd, kind = "meaningful")
 #> Relationships
 #> 
@@ -180,7 +180,7 @@ confounder no longer appears as meaningful.
 
 ``` r
 
-fd_adj <- frame(airquality, adjustment = "Temp")
+fd_adj <- triage(airquality, adjustment = "Temp")
 relationships(fd_adj, kind = "meaningful")
 #> Relationships
 #> 
@@ -200,11 +200,11 @@ the only meaningful pair left.
 
 [`framedf_settings()`](https://gillescolling.com/framedf/reference/framedf_settings.md)
 lists every threshold, and each one can be passed to
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md):
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md):
 
 ``` r
 
-fd <- frame(airquality,
+fd <- triage(airquality,
             strong_threshold   = 0.6,
             moderate_threshold = 0.4,
             weak_threshold     = 0.15)
@@ -215,7 +215,7 @@ fd <- frame(airquality,
 Start with [Quick
 Start](https://gillescolling.com/framedf/articles/quickstart.html): one
 data frame through
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md) and
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md) and
 the reader functions.
 
 - [Workflows](https://gillescolling.com/framedf/articles/workflows.html):

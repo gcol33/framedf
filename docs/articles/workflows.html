@@ -140,7 +140,7 @@ pair is reclassified as <strong>suspicious</strong> with the concern
 <span><span class="va">df</span><span class="op">$</span><span class="va">richness</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">plot_area</span><span class="op">)</span> <span class="op">+</span> <span class="va">bias</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">observer_id</span><span class="op">]</span> <span class="op">+</span></span>
 <span>               <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd</span>, kind <span class="op">=</span> <span class="st">"suspicious"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Relationships</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -184,7 +184,7 @@ or strong, the pair is reported as suspicious with the concern
 <span>  longitude <span class="op">=</span> <span class="fl">10</span> <span class="op">+</span> <span class="op">(</span><span class="va">yr</span> <span class="op">-</span> <span class="fl">2010</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.3</span> <span class="op">+</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">500</span>, sd <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
 <span>  richness  <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">fd_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df_drift</span><span class="op">)</span></span>
+<span><span class="va">fd_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df_drift</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd_drift</span>, kind <span class="op">=</span> <span class="st">"suspicious"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Relationships</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -225,7 +225,7 @@ signals.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">df_comp</span><span class="op">$</span><span class="va">alien_cover</span>  <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">df_comp</span><span class="op">$</span><span class="va">native_cover</span></span>
 <span><span class="va">df_comp</span><span class="op">$</span><span class="va">temperature</span>  <span class="op">&lt;-</span> <span class="fl">20</span> <span class="op">-</span> <span class="fl">0.01</span> <span class="op">*</span> <span class="va">df_comp</span><span class="op">$</span><span class="va">richness</span> <span class="op">+</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
-<span><span class="va">fd_comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">df_comp</span><span class="op">)</span></span>
+<span><span class="va">fd_comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">df_comp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/relationships.html">relationships</a></span><span class="op">(</span><span class="va">fd_comp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Relationships</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -262,7 +262,7 @@ larger sample. Stability is recorded per pair: <code>high</code> if both
 passes agree on tier, <code>medium</code> if they disagree,
 <code>low</code> if the probe alone was carried.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fd_big</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/frame.html">frame</a></span><span class="op">(</span><span class="va">big_df</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">fd_big</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/triage.html">triage</a></span><span class="op">(</span><span class="va">big_df</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/details.html">details</a></span><span class="op">(</span><span class="va">fd_big</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/details.html">details()</a></code> will report <em>“relationship screening used
 progressive subsampling”</em> whenever the input was above the

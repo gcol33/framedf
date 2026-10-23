@@ -1,9 +1,9 @@
-# Settings for `frame()`
+# Settings for `triage()`
 
 Returns the list of tunable thresholds used by
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md). Every
-field can be overridden through the `...` argument of
-[`frame()`](https://gillescolling.com/framedf/reference/frame.md). The
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md).
+Every field can be overridden through the `...` argument of
+[`triage()`](https://gillescolling.com/framedf/reference/triage.md). The
 defaults are chosen to be conservative on small data and to scale to
 millions of rows through progressive subsampling.
 

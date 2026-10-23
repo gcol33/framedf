@@ -1,15 +1,22 @@
 # Changelog
 
+## framedf (development version)
+
+- [`frame()`](https://rdrr.io/r/graphics/frame.html) is renamed
+  [`triage()`](https://gillescolling.com/framedf/reference/triage.md),
+  so attaching framedf no longer masks
+  [`graphics::frame()`](https://rdrr.io/r/graphics/frame.html).
+
 ## framedf 0.1.0
 
 Initial public release.
 
 ### Triage
 
-- [`frame()`](https://gillescolling.com/framedf/reference/frame.md)
-  builds a single triage object from a data frame, infers a semantic
-  role for every column, screens all sensible pairs of columns, and
-  lists anomalies in one pass.
+- [`frame()`](https://rdrr.io/r/graphics/frame.html) builds a single
+  triage object from a data frame, infers a semantic role for every
+  column, screens all sensible pairs of columns, and lists anomalies in
+  one pass.
 - Roles: `id`, `admin_index`, `group_id`, `temporal`, `coord_lat`,
   `coord_lon`, `measurement`, `compositional`, `categorical`, `flag`,
   `near_constant`, `constant`, `unknown`.

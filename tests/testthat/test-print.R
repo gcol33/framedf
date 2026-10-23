@@ -1,7 +1,7 @@
 test_that("print.frame_df runs without error and includes the headline shape", {
   set.seed(1)
   df <- data.frame(x = 1:50, y = stats::rnorm(50))
-  fd <- frame(df)
+  fd <- triage(df)
   out <- capture.output(print(fd))
   expect_true(any(grepl("^framedf", out)))
   expect_true(any(grepl("rows", out)))
@@ -13,14 +13,14 @@ test_that("print.frame_df runs without error and includes the headline shape", {
 test_that("relationships() prints meaningful section when a strong pair exists", {
   set.seed(1)
   x <- stats::rnorm(200)
-  fd <- frame(data.frame(x = x, y = 0.9 * x + stats::rnorm(200, sd = 0.3)))
+  fd <- triage(data.frame(x = x, y = 0.9 * x + stats::rnorm(200, sd = 0.3)))
   out <- capture.output(relationships(fd))
   expect_true(any(grepl("meaningful", out)))
   expect_true(any(grepl("strong", out)))
 })
 
 test_that("details() prints the four sections", {
-  fd <- frame(data.frame(x = 1:30, y = stats::rnorm(30)))
+  fd <- triage(data.frame(x = 1:30, y = stats::rnorm(30)))
   out <- capture.output(details(fd))
   expect_true(any(grepl("Analysis mode", out)))
   expect_true(any(grepl("Column roles",  out)))
@@ -29,7 +29,7 @@ test_that("details() prints the four sections", {
 })
 
 test_that("anomalies() prints something when nothing is wrong", {
-  fd <- frame(data.frame(x = stats::rnorm(50), y = stats::rnorm(50)))
+  fd <- triage(data.frame(x = stats::rnorm(50), y = stats::rnorm(50)))
   expect_silent({ out <- capture.output(anomalies(fd)) })
   expect_true(any(grepl("Anomalies", out)))
 })

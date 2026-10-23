@@ -42,7 +42,7 @@ Not stated in the docs yet.
 ## Documents
 - DESCRIPTION: claim, roles, pair screening, anomalies, scale
 - README / landing: claim, list of arcs, installation (compiled), first call on `airquality`, routing
-- Get started (quickstart.Rmd): one simulated data frame through `frame()` and the reader functions
+- Get started (quickstart.Rmd): one simulated data frame through `triage()` and the reader functions
 - articles: workflows (how-to), roles (explanation)
 
 ## Open
