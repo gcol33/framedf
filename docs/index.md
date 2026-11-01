@@ -213,7 +213,7 @@ fd <- triage(airquality,
 ## Documentation
 
 Start with [Quick
-Start](https://gillescolling.com/framedf/articles/quickstart.html): one
+Start](https://gillescolling.com/framedf/articles/framedf.html): one
 data frame through
 [`triage()`](https://gillescolling.com/framedf/reference/triage.md) and
 the reader functions.

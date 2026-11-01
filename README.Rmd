@@ -99,7 +99,7 @@ fd <- triage(airquality,
 
 ## Documentation
 
-Start with [Quick Start](https://gillescolling.com/framedf/articles/quickstart.html): one data frame through `triage()` and the reader functions.
+Start with [Quick Start](https://gillescolling.com/framedf/articles/framedf.html): one data frame through `triage()` and the reader functions.
 
 - [Workflows](https://gillescolling.com/framedf/articles/workflows.html): an observer effect, spatial sampling drift, a constrained complement and subsampling on large data.
 - [Roles and Rules](https://gillescolling.com/framedf/articles/roles.html): what each role means and why some columns are left out of screening.

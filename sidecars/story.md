@@ -21,12 +21,12 @@ R users receiving a table they did not build (field data, a collaborator's expor
 - question: what relates to what, and what might be an artefact?
 - answer: role-aware pair screening on C++ primitives, grouped as meaningful, suspicious, structural, ignored; optional confounder adjustment
 - home: vignettes/workflows.Rmd
-- also: README, quickstart
+- also: README, framedf.Rmd
 
 ### A3 What looks wrong
 - question: which values should I check?
 - answer: anomalies, missingness and inflation patterns
-- home: vignettes/quickstart.Rmd
+- home: vignettes/framedf.Rmd
 - also: README
 
 ### A4 Large tables
@@ -42,7 +42,7 @@ Not stated in the docs yet.
 ## Documents
 - DESCRIPTION: claim, roles, pair screening, anomalies, scale
 - README / landing: claim, list of arcs, installation (compiled), first call on `airquality`, routing
-- Get started (quickstart.Rmd): one simulated data frame through `triage()` and the reader functions
+- Get started (framedf.Rmd): one simulated data frame through `triage()` and the reader functions
 - articles: workflows (how-to), roles (explanation)
 
 ## Open
