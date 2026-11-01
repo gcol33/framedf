@@ -1,11 +1,11 @@
 # Articles
 
-### Getting Started
+### Get started
 
 - [Quick
   Start](https://gillescolling.com/framedf/articles/quickstart.md):
 
-### Practical Guides
+### Practical guides
 
 - [Workflows](https://gillescolling.com/framedf/articles/workflows.md):
 - [Roles and

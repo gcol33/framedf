@@ -42,21 +42,12 @@ navbar:
     - news
     right:
     - search
-    - lightswitch
     - github
+    - lightswitch
   components:
     intro:
-      text: Get Started
+      text: Get started
       href: articles/quickstart.html
-    articles:
-      text: Articles
-      menu:
-      - text: Quick Start
-        href: articles/quickstart.html
-      - text: Workflows
-        href: articles/workflows.html
-      - text: Roles and Rules
-        href: articles/roles.html
     github:
       icon: fab fa-github
       href: https://github.com/gcol33/framedf
@@ -77,11 +68,11 @@ reference:
 - title: Package
   contents: framedf-package
 articles:
-- title: Getting Started
-  navbar: ~
-  contents: quickstart
-- title: Practical Guides
-  navbar: ~
+- title: Get started
+  contents:
+  - quickstart
+- title: Practical guides
+  navbar: Practical guides
   contents:
   - workflows
   - roles
