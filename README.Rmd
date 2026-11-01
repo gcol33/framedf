@@ -35,7 +35,7 @@ The package compiles C++ code. Install the build tools for your operating system
 
 | Operating system | Build tools |
 |---|---|
-| Windows | [Rtools](https://cran.r-project.org/bin/windows/Rtools/), the version that matches your R version |
+| Windows | [Rtools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version |
 | macOS | Run `xcode-select --install` in Terminal |
 | Debian / Ubuntu | Install `r-base-dev` |
 
